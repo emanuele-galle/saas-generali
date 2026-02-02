@@ -1,0 +1,55 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useTRPC } from "@/lib/trpc";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import {
+  ConsultantForm,
+  type ConsultantFormData,
+} from "@/components/dashboard/consultant-form";
+
+export default function NewConsultantPage() {
+  const router = useRouter();
+  const trpc = useTRPC();
+
+  const createMutation = useMutation(
+    trpc.consultants.create.mutationOptions({
+      onSuccess: () => {
+        toast.success("Consulente creato con successo");
+        router.push("/consultants");
+      },
+      onError: (error) => {
+        toast.error(error.message || "Errore nella creazione");
+      },
+    })
+  );
+
+  function handleSubmit(data: ConsultantFormData) {
+    createMutation.mutate({
+      ...data,
+      password: data.password || "temppass2026!",
+      consultantEmail: data.consultantEmail || data.email,
+      linkedinUrl: data.linkedinUrl || "",
+      facebookUrl: data.facebookUrl || "",
+      twitterUrl: data.twitterUrl || "",
+    });
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Nuovo Consulente
+        </h1>
+        <p className="text-muted-foreground">
+          Crea un nuovo profilo consulente con la relativa landing page
+        </p>
+      </div>
+      <ConsultantForm
+        onSubmit={handleSubmit}
+        isLoading={createMutation.isPending}
+      />
+    </div>
+  );
+}

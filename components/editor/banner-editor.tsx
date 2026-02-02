@@ -1,0 +1,77 @@
+"use client";
+
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+interface BannerData {
+  imageUrl?: string;
+  linkUrl?: string;
+  altText?: string;
+}
+
+interface BannerEditorProps {
+  data: BannerData;
+  onChange: (data: BannerData) => void;
+}
+
+export function BannerEditor({ data, onChange }: BannerEditorProps) {
+  const { register, watch } = useForm<BannerData>({
+    defaultValues: {
+      imageUrl: data.imageUrl ?? "",
+      linkUrl: data.linkUrl ?? "",
+      altText: data.altText ?? "",
+    },
+  });
+
+  useEffect(() => {
+    const subscription = watch((values) => {
+      onChange({
+        imageUrl: values.imageUrl || undefined,
+        linkUrl: values.linkUrl || undefined,
+        altText: values.altText || undefined,
+      });
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, onChange]);
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="banner-image">URL immagine banner</Label>
+        <Input
+          id="banner-image"
+          type="url"
+          placeholder="https://esempio.com/banner.jpg"
+          {...register("imageUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Formato consigliato: 1200x400px (rapporto 3:1).
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="banner-link">URL di destinazione (opzionale)</Label>
+        <Input
+          id="banner-link"
+          type="url"
+          placeholder="https://esempio.com/promo"
+          {...register("linkUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se compilato, il banner diventa cliccabile.
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="banner-alt">Testo alternativo</Label>
+        <Input
+          id="banner-alt"
+          placeholder="Descrizione del banner per accessibilita"
+          {...register("altText")}
+        />
+      </div>
+    </div>
+  );
+}

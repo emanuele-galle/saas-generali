@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  SUPERADMIN
+  ADMIN
+  CONSULTANT
+}
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum DomainStatus {
+  PENDING
+  ACTIVE
+  ERROR
+}
+
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  password   String
+  name       String
+  role       UserRole @default(CONSULTANT)
+  image      String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  consultant Consultant?
+
+  @@map("users")
+}
+
+model Consultant {
+  id           String  @id @default(cuid())
+  userId       String  @unique @map("user_id")
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Dati Personali
+  firstName    String  @map("first_name")
+  lastName     String  @map("last_name")
+  title        String? // "Dott.", "Ing.", etc.
+  role         String  // "Executive Manager", "Financial Advisor", etc.
+  network      String? // "Rete Private e Wealth", etc.
+  bio          String? @db.Text
+  profileImage String? @map("profile_image")
+
+  // Contatti
+  email    String
+  phone    String?
+  mobile   String?
+  address  String?
+  cap      String?
+  city     String?
+  province String?
+
+  // Certificazioni
+  efpa               Boolean @default(false)
+  efpaEsg            Boolean @default(false) @map("efpa_esg")
+  sustainableAdvisor Boolean @default(false) @map("sustainable_advisor")
+
+  // Social
+  linkedinUrl String? @map("linkedin_url")
+  facebookUrl String? @map("facebook_url")
+  twitterUrl  String? @map("twitter_url")
+
+  // Relazioni
+  landingPage LandingPage?
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  @@map("consultants")
+}
+
+model LandingPage {
+  id           String     @id @default(cuid())
+  consultantId String     @unique @map("consultant_id")
+  consultant   Consultant @relation(fields: [consultantId], references: [id], onDelete: Cascade)
+  slug         String     @unique
+  status       PageStatus @default(DRAFT)
+
+  // Sezioni (JSON per flessibilità)
+  coverData       Json? @map("cover_data")
+  summaryData     Json? @map("summary_data")
+  mapData         Json? @map("map_data")
+  skillsData      Json? @map("skills_data")
+  experiencesData Json? @map("experiences_data")
+  educationData   Json? @map("education_data")
+  interestsData   Json? @map("interests_data")
+  bannerData      Json? @map("banner_data")
+  focusOnData     Json? @map("focus_on_data")
+
+  // SEO
+  metaTitle       String? @map("meta_title")
+  metaDescription String? @db.Text @map("meta_description")
+
+  // Dominio
+  customDomain CustomDomain?
+
+  // Analytics
+  views        Int       @default(0)
+  lastViewedAt DateTime? @map("last_viewed_at")
+
+  // Submissions
+  contactSubmissions ContactSubmission[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("landing_pages")
+}
+
+model CustomDomain {
+  id              String       @id @default(cuid())
+  landingPageId   String       @unique @map("landing_page_id")
+  landingPage     LandingPage  @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+  domain          String       @unique
+  status          DomainStatus @default(PENDING)
+  sslStatus       String?      @map("ssl_status")
+  verificationTxt String?      @map("verification_txt")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  @@map("custom_domains")
+}
+
+model ContactSubmission {
+  id              String      @id @default(cuid())
+  landingPageId   String      @map("landing_page_id")
+  landingPage     LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+  firstName       String      @map("first_name")
+  lastName        String      @map("last_name")
+  email           String
+  phone           String?
+  message         String?     @db.Text
+  isExistingClient Boolean    @default(false) @map("is_existing_client")
+  createdAt       DateTime    @default(now()) @map("created_at")
+
+  @@index([landingPageId])
+  @@map("contact_submissions")
+}
+
+model Media {
+  id         String   @id @default(cuid())
+  filename   String
+  url        String
+  mimeType   String   @map("mime_type")
+  size       Int
+  uploadedBy String   @map("uploaded_by")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("media")
+}
