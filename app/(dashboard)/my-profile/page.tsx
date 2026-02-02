@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
 import { useTRPC } from "@/lib/trpc";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -10,16 +9,13 @@ import {
   type ConsultantFormData,
 } from "@/components/dashboard/consultant-form";
 
-export default function EditConsultantPage() {
-  const params = useParams();
-  const router = useRouter();
+export default function MyProfilePage() {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const id = params.id as string;
   const profileImageRef = useRef<string | undefined>(undefined);
 
   const { data: consultant, isLoading } = useQuery(
-    trpc.consultants.getById.queryOptions({ id })
+    trpc.consultants.getByUserId.queryOptions()
   );
 
   // Initialize the ref when consultant data loads
@@ -30,9 +26,8 @@ export default function EditConsultantPage() {
   const updateMutation = useMutation(
     trpc.consultants.update.mutationOptions({
       onSuccess: () => {
-        toast.success("Consulente aggiornato con successo");
+        toast.success("Profilo aggiornato con successo");
         queryClient.invalidateQueries();
-        router.push("/consultants");
       },
       onError: (error) => {
         toast.error(error.message || "Errore nell'aggiornamento");
@@ -51,14 +46,17 @@ export default function EditConsultantPage() {
   if (!consultant) {
     return (
       <div className="flex items-center justify-center py-12">
-        <p className="text-muted-foreground">Consulente non trovato</p>
+        <p className="text-muted-foreground">
+          Nessun profilo consulente associato al tuo account.
+        </p>
       </div>
     );
   }
 
   function handleSubmit(data: ConsultantFormData) {
+    if (!consultant) return;
     updateMutation.mutate({
-      id,
+      id: consultant.id,
       firstName: data.firstName,
       lastName: data.lastName,
       title: data.title,
@@ -85,17 +83,14 @@ export default function EditConsultantPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Modifica Consulente
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight">Il mio Profilo</h1>
         <p className="text-muted-foreground">
-          {consultant.title ? `${consultant.title} ` : ""}
-          {consultant.firstName} {consultant.lastName}
+          Modifica le tue informazioni personali e professionali
         </p>
       </div>
       <ConsultantForm
         defaultValues={{
-          email: consultant.user.email,
+          email: consultant.email,
           firstName: consultant.firstName,
           lastName: consultant.lastName,
           title: consultant.title ?? undefined,

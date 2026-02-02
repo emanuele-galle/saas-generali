@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -34,13 +35,14 @@ export function LandingHeader() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <a href="#" className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary">
-            <span className="text-lg font-bold text-white">G</span>
-          </div>
-          <span className="text-lg font-semibold text-foreground">
-            Generali
-          </span>
+        <a href="#" className="flex items-center">
+          <Image
+            src="/images/generali-logo.svg"
+            alt="Generali"
+            width={120}
+            height={40}
+            priority
+          />
         </a>
 
         {/* Desktop Navigation */}

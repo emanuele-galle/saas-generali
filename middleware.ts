@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const publicPaths = ["/login", "/api/contact", "/api/health", "/api/vcard", "/api/auth"];
+const publicPaths = ["/login", "/api/contact", "/api/health", "/api/vcard", "/api/auth", "/robots.txt", "/sitemap.xml"];
 
 // Main app hostname - requests from other hosts are treated as custom domains
-const APP_HOSTNAME = "saas-generali.fodivps1.cloud";
+const APP_HOSTNAME = process.env.NEXT_PUBLIC_APP_HOSTNAME ?? "localhost";
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -56,6 +56,6 @@ export function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|images|fonts).*)",
+    "/((?!_next/static|_next/image|favicon.ico|images|fonts|uploads).*)",
   ],
 };

@@ -1,4 +1,7 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
+import { StaggerContainer, StaggerItem } from "@/components/landing/animate-on-scroll";
 
 interface Skill {
   name: string;
@@ -30,25 +33,24 @@ export function SkillsSection({ skillsData }: SkillsSectionProps) {
           {title}
         </h2>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <StaggerContainer className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {skills.map((skill, index) => (
-            <Card
-              key={index}
-              className="border-l-4 border-l-primary transition-shadow hover:shadow-md"
-            >
-              <CardContent className="p-6">
-                <h3 className="mb-2 text-base font-semibold text-foreground">
-                  {skill.name}
-                </h3>
-                {skill.description && (
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {skill.description}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+            <StaggerItem key={index}>
+              <Card className="border-l-4 border-l-primary transition-shadow hover:shadow-md">
+                <CardContent className="p-6">
+                  <h3 className="mb-2 text-base font-semibold text-foreground">
+                    {skill.name}
+                  </h3>
+                  {skill.description && (
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {skill.description}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </div>
     </section>
   );

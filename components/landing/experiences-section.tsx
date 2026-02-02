@@ -1,3 +1,7 @@
+"use client";
+
+import { StaggerContainer, StaggerItem } from "@/components/landing/animate-on-scroll";
+
 interface Experience {
   company: string;
   role: string;
@@ -33,9 +37,9 @@ export function ExperiencesSection({
         </h2>
 
         <div className="mx-auto max-w-3xl">
-          <div className="relative border-l-2 border-primary/20 pl-8">
+          <StaggerContainer className="relative border-l-2 border-primary/20 pl-8">
             {experiences.map((exp, index) => (
-              <div
+              <StaggerItem
                 key={index}
                 className="relative mb-10 last:mb-0"
               >
@@ -59,9 +63,9 @@ export function ExperiencesSection({
                     </p>
                   )}
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </div>
     </section>

@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 interface CoverData {
@@ -33,10 +36,6 @@ export function CoverSection({ consultant, coverData }: CoverSectionProps) {
   const ctaText = coverData.ctaText ?? "Chiedi un appuntamento";
   const ctaHref = coverData.ctaHref ?? "#contatti";
 
-  const backgroundStyle = coverData.backgroundImage
-    ? undefined
-    : undefined;
-
   const gradientClass =
     coverData.backgroundGradient ??
     "bg-gradient-to-br from-[#1A1A1A] via-[#2d2d2d] to-[#1A1A1A]";
@@ -64,7 +63,12 @@ export function CoverSection({ consultant, coverData }: CoverSectionProps) {
         <div className="flex flex-col items-center gap-8 text-center md:flex-row md:gap-12 md:text-left">
           {/* Consultant Photo */}
           {consultant.profileImage && (
-            <div className="shrink-0">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="shrink-0"
+            >
               <div className="relative h-40 w-40 overflow-hidden rounded-full border-4 border-white/20 shadow-2xl sm:h-48 sm:w-48">
                 <Image
                   src={consultant.profileImage}
@@ -74,11 +78,16 @@ export function CoverSection({ consultant, coverData }: CoverSectionProps) {
                   priority
                 />
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Text */}
-          <div className="flex flex-col gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            className="flex flex-col gap-4"
+          >
             <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
               {headline}
             </h1>
@@ -88,12 +97,17 @@ export function CoverSection({ consultant, coverData }: CoverSectionProps) {
             <p className="text-sm font-medium text-primary-foreground/70">
               {consultant.role}
             </p>
-            <div className="mt-4">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.5, ease: "easeOut" }}
+              className="mt-4"
+            >
               <Button asChild size="lg" className="text-base">
                 <a href={ctaHref}>{ctaText}</a>
               </Button>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </section>

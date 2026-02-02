@@ -1,0 +1,5 @@
+<svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="20" cy="20" r="16" fill="#C21D17"/>
+  <text x="20" y="26" text-anchor="middle" fill="white" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="bold">G</text>
+  <text x="70" y="26" text-anchor="middle" fill="#1A1A1A" font-family="Helvetica, Arial, sans-serif" font-size="16" font-weight="600">Generali</text>
+</svg>

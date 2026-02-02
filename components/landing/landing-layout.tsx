@@ -12,6 +12,7 @@ import { InterestsSection } from "@/components/landing/interests-section";
 import { BannerSection } from "@/components/landing/banner-section";
 import { FocusOnSection } from "@/components/landing/focus-on-section";
 import { ContactForm } from "@/components/landing/contact-form";
+import { AnimateOnScroll } from "@/components/landing/animate-on-scroll";
 
 interface LandingLayoutProps {
   consultant: Consultant;
@@ -39,7 +40,7 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
       <LandingHeader />
 
       <main>
-        {/* 1. Cover */}
+        {/* 1. Cover - no animation wrapper, has its own */}
         <CoverSection
           consultant={consultant}
           coverData={
@@ -50,69 +51,89 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
         />
 
         {/* 2. Profile */}
-        <ProfileSection consultant={consultant} />
+        <AnimateOnScroll>
+          <ProfileSection consultant={consultant} />
+        </AnimateOnScroll>
 
         {/* 3. Map */}
         {isJsonObject(landingPage.mapData) && (
-          <MapSection
-            mapData={landingPage.mapData as unknown as Parameters<typeof MapSection>[0]["mapData"]}
-          />
+          <AnimateOnScroll>
+            <MapSection
+              mapData={landingPage.mapData as unknown as Parameters<typeof MapSection>[0]["mapData"]}
+            />
+          </AnimateOnScroll>
         )}
 
         {/* 4. Summary */}
         {isJsonObject(landingPage.summaryData) && (
-          <SummarySection
-            summaryData={landingPage.summaryData as unknown as Parameters<typeof SummarySection>[0]["summaryData"]}
-          />
+          <AnimateOnScroll>
+            <SummarySection
+              summaryData={landingPage.summaryData as unknown as Parameters<typeof SummarySection>[0]["summaryData"]}
+            />
+          </AnimateOnScroll>
         )}
 
         {/* 5. Skills */}
         {isJsonObject(landingPage.skillsData) && (
-          <SkillsSection
-            skillsData={landingPage.skillsData as unknown as Parameters<typeof SkillsSection>[0]["skillsData"]}
-          />
+          <AnimateOnScroll>
+            <SkillsSection
+              skillsData={landingPage.skillsData as unknown as Parameters<typeof SkillsSection>[0]["skillsData"]}
+            />
+          </AnimateOnScroll>
         )}
 
         {/* 6. Experiences */}
         {isJsonObject(landingPage.experiencesData) && (
-          <ExperiencesSection
-            experiencesData={landingPage.experiencesData as unknown as Parameters<typeof ExperiencesSection>[0]["experiencesData"]}
-          />
+          <AnimateOnScroll>
+            <ExperiencesSection
+              experiencesData={landingPage.experiencesData as unknown as Parameters<typeof ExperiencesSection>[0]["experiencesData"]}
+            />
+          </AnimateOnScroll>
         )}
 
         {/* 7. Education */}
         {isJsonObject(landingPage.educationData) && (
-          <EducationSection
-            educationData={landingPage.educationData as unknown as Parameters<typeof EducationSection>[0]["educationData"]}
-          />
+          <AnimateOnScroll>
+            <EducationSection
+              educationData={landingPage.educationData as unknown as Parameters<typeof EducationSection>[0]["educationData"]}
+            />
+          </AnimateOnScroll>
         )}
 
         {/* 8. Interests */}
         {isJsonObject(landingPage.interestsData) && (
-          <InterestsSection
-            interestsData={landingPage.interestsData as unknown as Parameters<typeof InterestsSection>[0]["interestsData"]}
-          />
+          <AnimateOnScroll>
+            <InterestsSection
+              interestsData={landingPage.interestsData as unknown as Parameters<typeof InterestsSection>[0]["interestsData"]}
+            />
+          </AnimateOnScroll>
         )}
 
         {/* 9. Banner */}
         {isJsonObject(landingPage.bannerData) && (
-          <BannerSection
-            bannerData={landingPage.bannerData as unknown as Parameters<typeof BannerSection>[0]["bannerData"]}
-          />
+          <AnimateOnScroll>
+            <BannerSection
+              bannerData={landingPage.bannerData as unknown as Parameters<typeof BannerSection>[0]["bannerData"]}
+            />
+          </AnimateOnScroll>
         )}
 
         {/* 10. Focus On */}
         {isJsonObject(landingPage.focusOnData) && (
-          <FocusOnSection
-            focusOnData={landingPage.focusOnData as unknown as Parameters<typeof FocusOnSection>[0]["focusOnData"]}
-          />
+          <AnimateOnScroll>
+            <FocusOnSection
+              focusOnData={landingPage.focusOnData as unknown as Parameters<typeof FocusOnSection>[0]["focusOnData"]}
+            />
+          </AnimateOnScroll>
         )}
 
         {/* Contact Form */}
-        <ContactForm
-          landingPageId={landingPage.id}
-          consultantName={consultantFullName}
-        />
+        <AnimateOnScroll>
+          <ContactForm
+            landingPageId={landingPage.id}
+            consultantName={consultantFullName}
+          />
+        </AnimateOnScroll>
       </main>
 
       <LandingFooter

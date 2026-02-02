@@ -6,13 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 export default function LoginPage() {
   return (
@@ -57,57 +50,92 @@ function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            className="h-7 w-7 text-white"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-          </svg>
-        </div>
-        <CardTitle className="text-2xl">Saas Generali</CardTitle>
-        <CardDescription>
-          Accedi alla piattaforma di gestione landing page
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
+    <div className="flex min-h-screen">
+      {/* Left: Brand Panel */}
+      <div className="hidden flex-col justify-between bg-gradient-to-br from-[#C21D17] via-[#9B1610] to-[#6B0F0A] p-12 text-white lg:flex lg:w-1/2">
+        <div>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
+              <span className="text-xl font-bold">G</span>
             </div>
-          )}
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="email@generali.it"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <span className="text-xl font-bold">Generali</span>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+        </div>
+        <div className="space-y-6">
+          <h1 className="text-4xl font-bold leading-tight">
+            Piattaforma Landing Page
+            <br />
+            Consulenti
+          </h1>
+          <p className="max-w-md text-lg text-white/80">
+            Gestisci le landing page personalizzate dei consulenti del Gruppo
+            Generali. Crea, pubblica e monitora le performance.
+          </p>
+        </div>
+        <p className="text-sm text-white/50">
+          &copy; {new Date().getFullYear()} Generali Italia S.p.A.
+        </p>
+      </div>
+
+      {/* Right: Login Form */}
+      <div className="flex w-full items-center justify-center bg-white px-6 lg:w-1/2">
+        <div className="w-full max-w-sm space-y-8">
+          {/* Mobile logo */}
+          <div className="text-center lg:hidden">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#C21D17]">
+              <span className="text-xl font-bold text-white">G</span>
+            </div>
+            <h2 className="text-xl font-bold text-foreground">
+              Saas Generali
+            </h2>
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Accesso in corso..." : "Accedi"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+
+          <div className="hidden lg:block">
+            <h2 className="text-2xl font-bold text-foreground">
+              Accedi
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Inserisci le tue credenziali per accedere alla piattaforma
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                {error}
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="email@generali.it"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full bg-[#C21D17] hover:bg-[#9B1610]"
+              disabled={loading}
+            >
+              {loading ? "Accesso in corso..." : "Accedi"}
+            </Button>
+          </form>
+        </div>
+      </div>
+    </div>
   );
 }

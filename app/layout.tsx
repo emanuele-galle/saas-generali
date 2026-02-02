@@ -9,6 +9,17 @@ export const metadata: Metadata = {
   },
   description:
     "Piattaforma di gestione landing page personali per i consulenti del Gruppo Generali.",
+  icons: {
+    icon: "/images/generali-logo.svg",
+  },
+  openGraph: {
+    type: "website",
+    locale: "it_IT",
+    siteName: "Saas Generali",
+    title: "Saas Generali - Gestione Landing Page Consulenti",
+    description:
+      "Piattaforma di gestione landing page personali per i consulenti del Gruppo Generali.",
+  },
 };
 
 export default function RootLayout({

@@ -1,8 +1,11 @@
 "use client";
 
+import { useState, useRef } from "react";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +21,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CONSULTANT_ROLES, CONSULTANT_NETWORKS, CONSULTANT_TITLES } from "@/lib/constants";
+import { Camera, Loader2 } from "lucide-react";
 
 const consultantFormSchema = z.object({
   email: z.string().email("Email non valida"),
@@ -47,17 +51,27 @@ export type ConsultantFormData = z.infer<typeof consultantFormSchema>;
 
 interface ConsultantFormProps {
   defaultValues?: Partial<ConsultantFormData>;
+  profileImageUrl?: string | null;
   onSubmit: (data: ConsultantFormData) => void;
+  onProfileImageChange?: (url: string) => void;
   isLoading?: boolean;
   isEdit?: boolean;
 }
 
 export function ConsultantForm({
   defaultValues,
+  profileImageUrl,
   onSubmit,
+  onProfileImageChange,
   isLoading,
   isEdit = false,
 }: ConsultantFormProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    profileImageUrl ?? null
+  );
+
   const {
     register,
     handleSubmit,
@@ -74,8 +88,92 @@ export function ConsultantForm({
     },
   });
 
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || "Errore nell'upload");
+        return;
+      }
+
+      setPreviewUrl(data.url);
+      onProfileImageChange?.(data.url);
+      toast.success("Foto caricata");
+    } catch {
+      toast.error("Errore nell'upload della foto");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* Foto Profilo */}
+      {isEdit && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Foto profilo</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-6">
+              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-muted">
+                {previewUrl ? (
+                  <Image
+                    src={previewUrl}
+                    alt="Foto profilo"
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <Camera className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                )}
+              </div>
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handlePhotoUpload}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  {uploading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Camera className="mr-2 h-4 w-4" />
+                  )}
+                  {uploading ? "Caricamento..." : "Cambia foto"}
+                </Button>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  JPG, PNG o WebP. Max 5MB.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Dati Personali */}
       <Card>
         <CardHeader>
