@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const publicPaths = ["/login", "/api/contact", "/api/health", "/api/vcard", "/api/auth", "/robots.txt", "/sitemap.xml"];
+const publicPaths = ["/login", "/forgot-password", "/reset-password", "/invite", "/api/contact", "/api/health", "/api/vcard", "/api/auth", "/api/uploads", "/robots.txt", "/sitemap.xml"];
 
 // Main app hostname - requests from other hosts are treated as custom domains
 const APP_HOSTNAME = process.env.NEXT_PUBLIC_APP_HOSTNAME ?? "localhost";

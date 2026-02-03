@@ -55,4 +55,8 @@ export const LANDING_SECTIONS = [
   { id: "interests", label: "Gli Interessi", number: 8 },
   { id: "banner", label: "Il Banner", number: 9 },
   { id: "focusOn", label: "Il Focus On", number: 10 },
+  { id: "testimonials", label: "Le Testimonianze", number: 11 },
+  { id: "video", label: "Il Video", number: 12 },
+  { id: "portfolio", label: "Il Portfolio", number: 13 },
+  { id: "quote", label: "La Citazione", number: 14 },
 ] as const;

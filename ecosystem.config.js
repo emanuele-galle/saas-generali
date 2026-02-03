@@ -2,6 +2,7 @@ module.exports = {
   apps: [
     {
       name: "saas-generali",
+      user: 'sviluppatore',
       script: "npm",
       args: "start",
       cwd: "/var/www/projects/saas-generali",

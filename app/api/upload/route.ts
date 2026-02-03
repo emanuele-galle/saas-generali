@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, unlink } from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 import { auth } from "@/auth";
@@ -21,6 +21,7 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
+    const replaceUrl = formData.get("replaceUrl") as string | null;
 
     if (!file) {
       return NextResponse.json(
@@ -83,6 +84,16 @@ export async function POST(request: Request) {
         uploadedBy: session.user.id,
       },
     });
+
+    // Clean up old file if replacing
+    if (replaceUrl) {
+      const oldFilename = replaceUrl.split("/").pop();
+      if (oldFilename) {
+        const oldPath = path.join(UPLOAD_DIR, oldFilename);
+        unlink(oldPath).catch(() => {});
+        db.media.deleteMany({ where: { filename: oldFilename } }).catch(() => {});
+      }
+    }
 
     return NextResponse.json({
       success: true,

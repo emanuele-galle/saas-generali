@@ -1,7 +1,7 @@
 import path from "path";
 import { randomUUID } from "crypto";
 
-export const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+export const UPLOAD_DIR = path.join(process.cwd(), "data", "uploads");
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 export const ALLOWED_TYPES = [
   "image/jpeg",
@@ -17,5 +17,5 @@ export function generateFilename(originalName: string): string {
 }
 
 export function getPublicUrl(filename: string): string {
-  return `/uploads/${filename}`;
+  return `/api/uploads/${filename}`;
 }
