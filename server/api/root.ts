@@ -6,6 +6,7 @@ import { domainsRouter } from "./routers/domains";
 import { analyticsRouter } from "./routers/analytics";
 import { mediaRouter } from "./routers/media";
 import { usersRouter } from "./routers/users";
+import { invitationsRouter } from "./routers/invitations";
 
 export const appRouter = createTRPCRouter({
   consultants: consultantsRouter,
@@ -15,6 +16,7 @@ export const appRouter = createTRPCRouter({
   analytics: analyticsRouter,
   media: mediaRouter,
   users: usersRouter,
+  invitations: invitationsRouter,
 });
 
 export type AppRouter = typeof appRouter;
