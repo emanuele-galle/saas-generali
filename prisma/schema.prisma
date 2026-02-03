@@ -25,15 +25,17 @@ enum DomainStatus {
 }
 
 model User {
-  id         String   @id @default(cuid())
-  email      String   @unique
-  password   String
-  name       String
-  role       UserRole @default(CONSULTANT)
-  image      String?
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
-  consultant Consultant?
+  id               String    @id @default(cuid())
+  email            String    @unique
+  password         String
+  name             String
+  role             UserRole  @default(CONSULTANT)
+  image            String?
+  resetToken       String?   @map("reset_token")
+  resetTokenExpiry DateTime? @map("reset_token_expiry")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  consultant       Consultant?
 
   @@map("users")
 }
@@ -51,6 +53,7 @@ model Consultant {
   network      String? // "Rete Private e Wealth", etc.
   bio          String? @db.Text
   profileImage String? @map("profile_image")
+  themeColor   String? @map("theme_color")
 
   // Contatti
   email    String
@@ -67,9 +70,13 @@ model Consultant {
   sustainableAdvisor Boolean @default(false) @map("sustainable_advisor")
 
   // Social
-  linkedinUrl String? @map("linkedin_url")
-  facebookUrl String? @map("facebook_url")
-  twitterUrl  String? @map("twitter_url")
+  linkedinUrl  String? @map("linkedin_url")
+  facebookUrl  String? @map("facebook_url")
+  twitterUrl   String? @map("twitter_url")
+  instagramUrl String? @map("instagram_url")
+  tiktokUrl    String? @map("tiktok_url")
+  youtubeUrl   String? @map("youtube_url")
+  websiteUrl   String? @map("website_url")
 
   // Relazioni
   landingPage LandingPage?
@@ -87,15 +94,19 @@ model LandingPage {
   status       PageStatus @default(DRAFT)
 
   // Sezioni (JSON per flessibilità)
-  coverData       Json? @map("cover_data")
-  summaryData     Json? @map("summary_data")
-  mapData         Json? @map("map_data")
-  skillsData      Json? @map("skills_data")
-  experiencesData Json? @map("experiences_data")
-  educationData   Json? @map("education_data")
-  interestsData   Json? @map("interests_data")
-  bannerData      Json? @map("banner_data")
-  focusOnData     Json? @map("focus_on_data")
+  coverData          Json? @map("cover_data")
+  summaryData        Json? @map("summary_data")
+  mapData            Json? @map("map_data")
+  skillsData         Json? @map("skills_data")
+  experiencesData    Json? @map("experiences_data")
+  educationData      Json? @map("education_data")
+  interestsData      Json? @map("interests_data")
+  bannerData         Json? @map("banner_data")
+  focusOnData        Json? @map("focus_on_data")
+  testimonialsData   Json? @map("testimonials_data")
+  videoData          Json? @map("video_data")
+  portfolioData      Json? @map("portfolio_data")
+  quoteData          Json? @map("quote_data")
 
   // SEO
   metaTitle       String? @map("meta_title")
@@ -157,4 +168,18 @@ model Media {
   createdAt  DateTime @default(now()) @map("created_at")
 
   @@map("media")
+}
+
+model InvitationToken {
+  id          String    @id @default(cuid())
+  email       String
+  token       String    @unique
+  role        String    @default("CONSULTANT")
+  network     String?
+  createdById String    @map("created_by_id")
+  expiresAt   DateTime  @map("expires_at")
+  usedAt      DateTime? @map("used_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("invitation_tokens")
 }
