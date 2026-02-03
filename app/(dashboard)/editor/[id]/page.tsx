@@ -13,6 +13,8 @@ import {
   Save,
   Globe,
   Loader2,
+  PenSquare,
+  Eye,
 } from "lucide-react";
 
 /**
@@ -28,6 +30,10 @@ const SECTION_TO_DB_FIELD: Record<string, string> = {
   interests: "interestsData",
   banner: "bannerData",
   focusOn: "focusOnData",
+  testimonials: "testimonialsData",
+  video: "videoData",
+  portfolio: "portfolioData",
+  quote: "quoteData",
 };
 
 function buildInitialSections(
@@ -41,6 +47,10 @@ function buildInitialSections(
     interestsData: unknown;
     bannerData: unknown;
     focusOnData: unknown;
+    testimonialsData: unknown;
+    videoData: unknown;
+    portfolioData: unknown;
+    quoteData: unknown;
   } | undefined,
 ): Record<string, unknown> {
   if (!page) return {};
@@ -54,6 +64,10 @@ function buildInitialSections(
     interests: page.interestsData ?? { interests: [] },
     banner: page.bannerData ?? {},
     focusOn: page.focusOnData ?? { articles: [] },
+    testimonials: page.testimonialsData ?? { testimonials: [] },
+    video: page.videoData ?? {},
+    portfolio: page.portfolioData ?? { items: [] },
+    quote: page.quoteData ?? {},
   };
 }
 
@@ -77,6 +91,7 @@ export default function EditorPage() {
   // Local overrides: only tracks sections that the user has edited
   const [sectionOverrides, setSectionOverrides] = useState<Record<string, unknown>>({});
   const [previewRefreshKey, setPreviewRefreshKey] = useState(0);
+  const [mobileTab, setMobileTab] = useState<"editor" | "preview">("editor");
 
   // Merge initial data with user overrides
   const sections = useMemo(
@@ -291,20 +306,62 @@ export default function EditorPage() {
         </div>
       </div>
 
+      {/* Mobile Tab Toggle */}
+      <div className="flex border-b lg:hidden">
+        <button
+          type="button"
+          className={`flex flex-1 items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors ${
+            mobileTab === "editor"
+              ? "border-b-2 border-primary text-primary"
+              : "text-muted-foreground"
+          }`}
+          onClick={() => setMobileTab("editor")}
+        >
+          <PenSquare className="h-4 w-4" />
+          Editor
+        </button>
+        <button
+          type="button"
+          className={`flex flex-1 items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors ${
+            mobileTab === "preview"
+              ? "border-b-2 border-primary text-primary"
+              : "text-muted-foreground"
+          }`}
+          onClick={() => setMobileTab("preview")}
+        >
+          <Eye className="h-4 w-4" />
+          Anteprima
+        </button>
+      </div>
+
       {/* Split View */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel - Editor */}
-        <div className="w-[480px] shrink-0 overflow-y-auto border-r bg-background p-4">
+        <div
+          className={`w-full shrink-0 overflow-y-auto border-r bg-background p-4 lg:w-[400px] lg:max-w-[35vw] ${
+            mobileTab !== "editor" ? "hidden lg:block" : ""
+          }`}
+        >
           {hasData && (
             <SectionPanel
               sections={sections}
               onSectionChange={handleSectionChange}
+              consultantAddress={landingPage.consultant ? {
+                address: landingPage.consultant.address,
+                cap: landingPage.consultant.cap,
+                city: landingPage.consultant.city,
+                province: landingPage.consultant.province,
+              } : undefined}
             />
           )}
         </div>
 
         {/* Right Panel - Preview */}
-        <div className="flex-1 overflow-hidden">
+        <div
+          className={`flex-1 overflow-hidden ${
+            mobileTab !== "preview" ? "hidden lg:block" : ""
+          }`}
+        >
           <LivePreview
             slug={landingPage.slug}
             refreshKey={previewRefreshKey}

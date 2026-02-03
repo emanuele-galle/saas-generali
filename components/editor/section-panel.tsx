@@ -14,10 +14,22 @@ import { EducationEditor } from "@/components/editor/education-editor";
 import { InterestsEditor } from "@/components/editor/interests-editor";
 import { BannerEditor } from "@/components/editor/banner-editor";
 import { FocusOnEditor } from "@/components/editor/focus-on-editor";
+import { TestimonialsEditor } from "@/components/editor/testimonials-editor";
+import { VideoEditor } from "@/components/editor/video-editor";
+import { PortfolioEditor } from "@/components/editor/portfolio-editor";
+import { QuoteEditor } from "@/components/editor/quote-editor";
+
+interface ConsultantAddress {
+  address?: string | null;
+  cap?: string | null;
+  city?: string | null;
+  province?: string | null;
+}
 
 interface SectionPanelProps {
   sections: Record<string, unknown>;
   onSectionChange: (sectionId: string, data: unknown) => void;
+  consultantAddress?: ConsultantAddress;
 }
 
 /**
@@ -34,6 +46,7 @@ function getSectionEditor(
   sectionId: string,
   data: unknown,
   onChange: (data: unknown) => void,
+  consultantAddress?: ConsultantAddress,
 ): ReactNode {
   const record = asRecord(data);
 
@@ -57,6 +70,7 @@ function getSectionEditor(
         <MapEditor
           data={record as Parameters<typeof MapEditor>[0]["data"]}
           onChange={onChange}
+          consultantAddress={consultantAddress}
         />
       );
     case "skills":
@@ -101,6 +115,34 @@ function getSectionEditor(
           onChange={onChange}
         />
       );
+    case "testimonials":
+      return (
+        <TestimonialsEditor
+          data={{ testimonials: [], ...record } as Parameters<typeof TestimonialsEditor>[0]["data"]}
+          onChange={onChange}
+        />
+      );
+    case "video":
+      return (
+        <VideoEditor
+          data={record as Parameters<typeof VideoEditor>[0]["data"]}
+          onChange={onChange}
+        />
+      );
+    case "portfolio":
+      return (
+        <PortfolioEditor
+          data={{ items: [], ...record } as Parameters<typeof PortfolioEditor>[0]["data"]}
+          onChange={onChange}
+        />
+      );
+    case "quote":
+      return (
+        <QuoteEditor
+          data={record as Parameters<typeof QuoteEditor>[0]["data"]}
+          onChange={onChange}
+        />
+      );
     default:
       return (
         <p className="text-sm text-muted-foreground">
@@ -110,7 +152,7 @@ function getSectionEditor(
   }
 }
 
-export function SectionPanel({ sections, onSectionChange }: SectionPanelProps) {
+export function SectionPanel({ sections, onSectionChange, consultantAddress }: SectionPanelProps) {
   return (
     <Accordion.Root type="single" collapsible className="space-y-2">
       {LANDING_SECTIONS.map((section) => (
@@ -141,6 +183,7 @@ export function SectionPanel({ sections, onSectionChange }: SectionPanelProps) {
                 section.id,
                 sections[section.id],
                 (data) => onSectionChange(section.id, data),
+                consultantAddress,
               )}
             </div>
           </Accordion.Content>

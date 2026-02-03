@@ -5,6 +5,7 @@ import { LandingLayout } from "@/components/landing/landing-layout";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ preview?: string }>;
 }
 
 export async function generateMetadata({
@@ -27,7 +28,7 @@ export async function generateMetadata({
     },
   });
 
-  if (!landingPage || landingPage.status !== "PUBLISHED") {
+  if (!landingPage || (landingPage.status !== "PUBLISHED" && landingPage.status !== "DRAFT")) {
     return { title: "Pagina non trovata" };
   }
 
@@ -70,30 +71,39 @@ export async function generateMetadata({
   };
 }
 
-export default async function LandingPage({ params }: PageProps) {
+export default async function LandingPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
+  const { preview } = await searchParams;
+  const isPreview = preview === "true";
 
   const landingPage = await db.landingPage.findUnique({
     where: { slug },
     include: { consultant: true },
   });
 
-  if (!landingPage || landingPage.status !== "PUBLISHED") {
+  if (!landingPage) {
     notFound();
   }
 
-  // Increment view count without blocking the response
-  db.landingPage
-    .update({
-      where: { id: landingPage.id },
-      data: {
-        views: { increment: 1 },
-        lastViewedAt: new Date(),
-      },
-    })
-    .catch(() => {
-      // Silently ignore view count errors
-    });
+  // Allow DRAFT pages only in preview mode
+  if (landingPage.status !== "PUBLISHED" && !isPreview) {
+    notFound();
+  }
+
+  // Increment view count only for non-preview visits
+  if (!isPreview) {
+    db.landingPage
+      .update({
+        where: { id: landingPage.id },
+        data: {
+          views: { increment: 1 },
+          lastViewedAt: new Date(),
+        },
+      })
+      .catch(() => {
+        // Silently ignore view count errors
+      });
+  }
 
   return (
     <LandingLayout

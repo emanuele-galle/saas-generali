@@ -11,6 +11,10 @@ import { EducationSection } from "@/components/landing/education-section";
 import { InterestsSection } from "@/components/landing/interests-section";
 import { BannerSection } from "@/components/landing/banner-section";
 import { FocusOnSection } from "@/components/landing/focus-on-section";
+import { TestimonialsSection } from "@/components/landing/testimonials-section";
+import { VideoSection } from "@/components/landing/video-section";
+import { PortfolioSection } from "@/components/landing/portfolio-section";
+import { QuoteSection } from "@/components/landing/quote-section";
 import { ContactForm } from "@/components/landing/contact-form";
 import { AnimateOnScroll } from "@/components/landing/animate-on-scroll";
 
@@ -35,8 +39,10 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
     .filter(Boolean)
     .join(" ");
 
+  const themeColor = consultant.themeColor || "#C21D17";
+
   return (
-    <>
+    <div style={{ "--theme-color": themeColor } as React.CSSProperties}>
       <LandingHeader />
 
       <main>
@@ -127,20 +133,72 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
           </AnimateOnScroll>
         )}
 
+        {/* 11. Testimonials */}
+        {isJsonObject(landingPage.testimonialsData) && (
+          <AnimateOnScroll>
+            <TestimonialsSection
+              testimonialsData={landingPage.testimonialsData as unknown as Parameters<typeof TestimonialsSection>[0]["testimonialsData"]}
+            />
+          </AnimateOnScroll>
+        )}
+
+        {/* 12. Video */}
+        {isJsonObject(landingPage.videoData) && (
+          <AnimateOnScroll>
+            <VideoSection
+              videoData={landingPage.videoData as unknown as Parameters<typeof VideoSection>[0]["videoData"]}
+            />
+          </AnimateOnScroll>
+        )}
+
+        {/* 13. Portfolio */}
+        {isJsonObject(landingPage.portfolioData) && (
+          <AnimateOnScroll>
+            <PortfolioSection
+              portfolioData={landingPage.portfolioData as unknown as Parameters<typeof PortfolioSection>[0]["portfolioData"]}
+            />
+          </AnimateOnScroll>
+        )}
+
+        {/* 14. Quote */}
+        {isJsonObject(landingPage.quoteData) && (
+          <AnimateOnScroll>
+            <QuoteSection
+              quoteData={landingPage.quoteData as unknown as Parameters<typeof QuoteSection>[0]["quoteData"]}
+            />
+          </AnimateOnScroll>
+        )}
+
         {/* Contact Form */}
         <AnimateOnScroll>
           <ContactForm
             landingPageId={landingPage.id}
             consultantName={consultantFullName}
+            consultantEmail={consultant.email}
+            consultantPhone={consultant.phone ?? undefined}
+            consultantImage={consultant.profileImage}
+            consultantRole={consultant.role}
           />
         </AnimateOnScroll>
       </main>
 
       <LandingFooter
+        consultantName={consultantFullName}
+        consultantRole={consultant.role}
+        consultantEmail={consultant.email}
+        consultantPhone={consultant.phone ?? undefined}
+        consultantAddress={
+          [consultant.address, consultant.cap, consultant.city, consultant.province]
+            .filter(Boolean)
+            .join(", ") || undefined
+        }
         linkedinUrl={consultant.linkedinUrl}
         facebookUrl={consultant.facebookUrl}
         twitterUrl={consultant.twitterUrl}
+        instagramUrl={consultant.instagramUrl}
+        youtubeUrl={consultant.youtubeUrl}
+        websiteUrl={consultant.websiteUrl}
       />
-    </>
+    </div>
   );
 }
