@@ -125,7 +125,7 @@ function getSectionEditor(
     case "video":
       return (
         <VideoEditor
-          data={record as Parameters<typeof VideoEditor>[0]["data"]}
+          data={{ videos: [], ...record } as Parameters<typeof VideoEditor>[0]["data"]}
           onChange={onChange}
         />
       );
