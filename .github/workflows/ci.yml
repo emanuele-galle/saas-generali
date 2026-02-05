@@ -47,8 +47,7 @@ jobs:
           script: |
             cd /var/www/projects/saas-generali
             git pull origin main
-            npm install --production
-            npm run build
-            pm2 restart saas-generali --update-env
-            sleep 3
-            curl -sf http://localhost:3010/api/health || (echo "Health check failed" && exit 1)
+            docker compose build --no-cache app
+            docker compose up -d app
+            sleep 5
+            docker compose exec app wget -q -O /dev/null http://127.0.0.1:3000/api/health || (docker compose logs app --tail 30 && exit 1)

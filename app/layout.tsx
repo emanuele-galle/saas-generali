@@ -3,6 +3,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://saas-generali.fodivps1.cloud'),
   title: {
     default: "Saas Generali - Gestione Landing Page Consulenti",
     template: "%s | Saas Generali",
