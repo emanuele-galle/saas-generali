@@ -6,6 +6,7 @@ import {
 } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { randomBytes } from "crypto";
+import { verifyDNS } from "@/lib/dns";
 
 export const domainsRouter = createTRPCRouter({
   // List all domains (admin) or own domain (consultant)
@@ -110,8 +111,20 @@ export const domainsRouter = createTRPCRouter({
       });
       if (!domain) throw new TRPCError({ code: "NOT_FOUND" });
 
-      // In production, we'd check DNS TXT records here
-      // For now, mark as verified manually
+      const expectedIP = process.env.NEXT_PUBLIC_VPS_IP || "193.203.190.63";
+      const result = await verifyDNS(
+        domain.domain,
+        domain.verificationTxt,
+        expectedIP,
+      );
+
+      if (!result.valid) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Verifica DNS fallita: ${result.errors.join("; ")}`,
+        });
+      }
+
       return ctx.db.customDomain.update({
         where: { id: input.id },
         data: {

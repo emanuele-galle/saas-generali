@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTRPC } from "@/lib/trpc";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -47,9 +47,11 @@ export default function EditConsultantPage() {
   );
 
   // Initialize the ref when consultant data loads
-  if (consultant && profileImageRef.current === undefined) {
-    profileImageRef.current = consultant.profileImage ?? undefined;
-  }
+  useEffect(() => {
+    if (consultant && profileImageRef.current === undefined) {
+      profileImageRef.current = consultant.profileImage ?? undefined;
+    }
+  }, [consultant]);
 
   const updateMutation = useMutation(
     trpc.consultants.update.mutationOptions({

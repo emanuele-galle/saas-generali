@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { db } from "@/server/db";
 import type { UserRole } from "@prisma/client";
+import { checkRateLimit, recordAttempt, clearAttempts } from "@/lib/rate-limit";
 
 declare module "next-auth" {
   interface Session {
@@ -40,18 +41,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
+        const email = credentials.email as string;
+
+        if (!checkRateLimit(email)) {
+          throw new Error("Troppi tentativi. Riprova fra 15 minuti.");
+        }
+
         const user = await db.user.findUnique({
-          where: { email: credentials.email as string },
+          where: { email },
         });
 
-        if (!user) return null;
+        if (!user) {
+          recordAttempt(email);
+          return null;
+        }
 
         const isValidPassword = await bcrypt.compare(
           credentials.password as string,
           user.password
         );
 
-        if (!isValidPassword) return null;
+        if (!isValidPassword) {
+          recordAttempt(email);
+          return null;
+        }
+
+        clearAttempts(email);
 
         return {
           id: user.id,

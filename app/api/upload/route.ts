@@ -10,6 +10,7 @@ import {
   generateFilename,
   getPublicUrl,
 } from "@/lib/upload";
+import { validateMagicBytes } from "@/lib/file-validation";
 import { db } from "@/server/db";
 
 export async function POST(request: Request) {
@@ -45,6 +46,14 @@ export async function POST(request: Request) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
+
+    if (!validateMagicBytes(buffer, file.type)) {
+      return NextResponse.json(
+        { error: "Il contenuto del file non corrisponde al tipo dichiarato" },
+        { status: 400 },
+      );
+    }
+
     const filename = generateFilename(file.name);
 
     // Ensure upload directory exists
