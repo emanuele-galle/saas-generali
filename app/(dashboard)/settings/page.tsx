@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import pkg from "@/package.json";
 import { useTRPC } from "@/lib/trpc";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -142,7 +143,7 @@ export default function SettingsPage() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Piattaforma</p>
-              <p className="font-medium">Saas Generali v0.1.0</p>
+              <p className="font-medium">Saas Generali v{pkg.version}</p>
             </div>
           </div>
         </CardContent>

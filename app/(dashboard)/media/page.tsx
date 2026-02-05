@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Upload, Trash2, Copy, Loader2 } from "lucide-react";
+import { Upload, Trash2, Copy, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function MediaPage() {
   const trpc = useTRPC();
@@ -25,9 +25,11 @@ export default function MediaPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const limit = 24;
 
   const { data, isLoading } = useQuery(
-    trpc.media.list.queryOptions({ page: 1, limit: 60 })
+    trpc.media.list.queryOptions({ page, limit })
   );
 
   const deleteMutation = useMutation(
@@ -174,6 +176,33 @@ export default function MediaPage() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {data && data.pages > 1 && (
+        <div className="flex items-center justify-center gap-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Precedente
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Pagina {page} di {data.pages} ({data.total} file)
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
+            disabled={page >= data.pages}
+          >
+            Successiva
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
         </div>
       )}
 

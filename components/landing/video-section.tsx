@@ -1,10 +1,16 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import dynamic from "next/dynamic";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { CustomVideoPlayer } from "@/components/landing/video-player";
 import { BlurText } from "@/components/ui/blur-text";
+
+const CustomVideoPlayer = dynamic(
+  () => import("@/components/landing/video-player").then((m) => m.CustomVideoPlayer),
+  { loading: () => <div className="aspect-video w-full animate-pulse rounded-2xl bg-white/5" /> },
+);
 
 interface VideoItem {
   id: string;
@@ -121,10 +127,12 @@ function VideoGridCard({
           style={{ aspectRatio: "16/9" }}
         >
           {thumbnail ? (
-            <img
+            <Image
               src={thumbnail}
               alt={video.title || "Video"}
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
             <div

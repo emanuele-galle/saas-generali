@@ -18,7 +18,6 @@ import {
   Calendar,
   User,
   MessageSquare,
-  ExternalLink,
 } from "lucide-react";
 
 interface SubmissionDetailProps {

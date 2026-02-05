@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Save, Globe, Search, BarChart3 } from "lucide-react";
+import { Save, Search, BarChart3 } from "lucide-react";
 
 interface SeoAnalyticsEditorProps {
   landingPageId: string;

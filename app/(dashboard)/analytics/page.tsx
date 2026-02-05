@@ -1,13 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc";
-import { ViewsChart } from "@/components/dashboard/analytics/views-chart";
-import { TopConsultantsTable } from "@/components/dashboard/analytics/top-consultants-table";
 import { StatCardEnhanced } from "@/components/dashboard/analytics/stat-card-enhanced";
 import { PeriodSelector, type Period } from "@/components/dashboard/analytics/period-selector";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Eye, Mail, TrendingUp, Users } from "lucide-react";
+
+const ViewsChart = dynamic(
+  () => import("@/components/dashboard/analytics/views-chart").then((m) => m.ViewsChart),
+  { ssr: false, loading: () => <Skeleton className="h-[400px] w-full rounded-lg" /> },
+);
+const TopConsultantsTable = dynamic(
+  () => import("@/components/dashboard/analytics/top-consultants-table").then((m) => m.TopConsultantsTable),
+  { loading: () => <Skeleton className="h-[300px] w-full rounded-lg" /> },
+);
 
 export default function AnalyticsPage() {
   const trpc = useTRPC();

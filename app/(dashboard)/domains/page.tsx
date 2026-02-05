@@ -50,6 +50,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+const VPS_IP = process.env.NEXT_PUBLIC_VPS_IP || "193.203.190.63";
+
 export default function DomainsPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [newDomain, setNewDomain] = useState("");
@@ -361,7 +363,7 @@ export default function DomainsPage() {
               server:
             </p>
             <code className="block bg-muted p-3 rounded text-sm">
-              Tipo: A | Nome: @ | Valore: 193.203.190.63 | TTL: Auto
+              Tipo: A | Nome: @ | Valore: {VPS_IP} | TTL: Auto
             </code>
           </div>
           <div className="space-y-2">

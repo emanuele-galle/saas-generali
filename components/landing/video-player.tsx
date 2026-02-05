@@ -6,8 +6,6 @@ import {
   useRef,
   useCallback,
   useMemo,
-  type MouseEvent as ReactMouseEvent,
-  type TouchEvent as ReactTouchEvent,
 } from "react";
 import {
   Play,

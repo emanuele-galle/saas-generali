@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc";
-import { Users, Globe, Eye, Mail, TrendingUp, Percent } from "lucide-react";
+import { Users, Globe, Eye, Mail, Percent } from "lucide-react";
 import { StatCardEnhanced } from "@/components/dashboard/analytics/stat-card-enhanced";
 import { ViewsChart } from "@/components/dashboard/analytics/views-chart";
 import { TopConsultantsTable } from "@/components/dashboard/analytics/top-consultants-table";

@@ -5,10 +5,19 @@ import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc";
 import { toast } from "sonner";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import { SectionPanel } from "@/components/editor/section-panel";
-import { SeoAnalyticsEditor } from "@/components/editor/seo-analytics-editor";
 import { LivePreview } from "@/components/editor/live-preview";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const SectionPanel = dynamic(
+  () => import("@/components/editor/section-panel").then((m) => m.SectionPanel),
+  { loading: () => <Skeleton className="h-96 w-full" /> },
+);
+const SeoAnalyticsEditor = dynamic(
+  () => import("@/components/editor/seo-analytics-editor").then((m) => m.SeoAnalyticsEditor),
+  { loading: () => <Skeleton className="h-32 w-full" /> },
+);
 import {
   ArrowLeft,
   Save,

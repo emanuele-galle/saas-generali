@@ -3,7 +3,6 @@ import { unlink } from "fs/promises";
 import path from "path";
 import {
   createTRPCRouter,
-  adminProcedure,
   protectedProcedure,
 } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
