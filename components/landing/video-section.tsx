@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { CustomVideoPlayer } from "@/components/landing/video-player";
 
 interface VideoItem {
   id: string;
@@ -21,48 +22,29 @@ interface VideoSectionProps {
   videoData: VideoData;
 }
 
-/* ── Embed URL helpers ────────────────────────────────────── */
+/* ── Helpers ──────────────────────────────────────────────── */
 
 function getYouTubeId(url: string): string | null {
   const m = url.match(
-    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/,
   );
-  return m ? m[1] : null;
-}
-
-function getVimeoId(url: string): string | null {
-  const m = url.match(/vimeo\.com\/(\d+)/);
   return m ? m[1] : null;
 }
 
 function getThumbnailUrl(url: string): string | null {
   const ytId = getYouTubeId(url);
   if (ytId) return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-  // Vimeo thumbnails require API call — skip, use gradient fallback
-  return null;
-}
-
-/**
- * Build embed URL with parameters that:
- * - disable branding & info overlays
- * - prevent "watch on YouTube/Vimeo" links where possible
- */
-function getSecureEmbedUrl(url: string): string | null {
-  const ytId = getYouTubeId(url);
-  if (ytId) {
-    return `https://www.youtube.com/embed/${ytId}?modestbranding=1&rel=0&showinfo=0&fs=0&disablekb=0&iv_load_policy=3&cc_load_policy=0&playsinline=1`;
-  }
-  const vimeoId = getVimeoId(url);
-  if (vimeoId) {
-    return `https://player.vimeo.com/video/${vimeoId}?title=0&byline=0&portrait=0&dnt=1&transparent=0&playsinline=1`;
-  }
   return null;
 }
 
 function getVideoSource(url: string): "youtube" | "vimeo" | null {
   if (getYouTubeId(url)) return "youtube";
-  if (getVimeoId(url)) return "vimeo";
+  if (url.match(/vimeo\.com\/(\d+)/)) return "vimeo";
   return null;
+}
+
+function isValidVideoUrl(url: string): boolean {
+  return !!getVideoSource(url);
 }
 
 /* ── Normalize data (backward compat) ────────────────────── */
@@ -70,13 +52,11 @@ function getVideoSource(url: string): "youtube" | "vimeo" | null {
 function normalizeVideos(data: VideoData): VideoItem[] {
   const items: VideoItem[] = [];
 
-  // New format: videos array
   if (data.videos && data.videos.length > 0) {
-    items.push(...data.videos.filter((v) => v.url));
+    items.push(...data.videos.filter((v) => v.url && isValidVideoUrl(v.url)));
   }
 
-  // Legacy format: single videoUrl (only if videos array is empty)
-  if (items.length === 0 && data.videoUrl) {
+  if (items.length === 0 && data.videoUrl && isValidVideoUrl(data.videoUrl)) {
     items.push({ id: "legacy", url: data.videoUrl, title: data.title });
   }
 
@@ -107,7 +87,6 @@ function VideoCard({
       className="group relative flex-shrink-0 cursor-pointer overflow-hidden rounded-2xl ring-1 ring-white/10 transition-all hover:ring-2 hover:ring-white/30"
       style={{ width: "220px", aspectRatio: "9/16" }}
     >
-      {/* Background */}
       {thumbnail ? (
         <img
           src={thumbnail}
@@ -124,24 +103,20 @@ function VideoCard({
         />
       )}
 
-      {/* Dark overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-      {/* Play button */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all group-hover:scale-110 group-hover:bg-white/30">
           <Play className="h-6 w-6 fill-white text-white ml-0.5" />
         </div>
       </div>
 
-      {/* Source badge */}
       {source && (
         <div className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white/70 backdrop-blur-sm">
           {source === "youtube" ? "YT" : "Vimeo"}
         </div>
       )}
 
-      {/* Title */}
       {video.title && (
         <div className="absolute bottom-0 left-0 right-0 p-3">
           <p className="text-sm font-medium leading-tight text-white line-clamp-2">
@@ -153,7 +128,7 @@ function VideoCard({
   );
 }
 
-/* ── Modal Player ─────────────────────────────────────────── */
+/* ── Modal Player (with CustomVideoPlayer) ───────────────── */
 
 function VideoModal({
   videos,
@@ -166,7 +141,6 @@ function VideoModal({
 }) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const current = videos[currentIndex];
-  const embedUrl = current ? getSecureEmbedUrl(current.url) : null;
   const hasMultiple = videos.length > 1;
 
   const goNext = useCallback(() => {
@@ -177,18 +151,25 @@ function VideoModal({
     setCurrentIndex((i) => (i - 1 + videos.length) % videos.length);
   }, [videos.length]);
 
-  // Keyboard navigation
+  // Keyboard: Escape to close, arrows for nav (player handles space/k/m/f)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
-      if (e.key === "ArrowRight" && hasMultiple) goNext();
-      if (e.key === "ArrowLeft" && hasMultiple) goPrev();
+      // Only use arrows for video navigation if Shift is held (avoid conflict with seek)
+      if (e.key === "ArrowUp" && hasMultiple) {
+        e.preventDefault();
+        goPrev();
+      }
+      if (e.key === "ArrowDown" && hasMultiple) {
+        e.preventDefault();
+        goNext();
+      }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [onClose, goNext, goPrev, hasMultiple]);
 
-  if (!embedUrl) return null;
+  if (!current) return null;
 
   return (
     <motion.div
@@ -234,26 +215,23 @@ function VideoModal({
         </>
       )}
 
-      {/* Video container — vertical 9:16 aspect */}
+      {/* Video player — 9:16 aspect */}
       <div
         className="relative mx-auto w-full max-w-sm"
-        style={{ aspectRatio: "9/16", maxHeight: "85vh" }}
+        style={{ maxHeight: "85vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <iframe
-          key={currentIndex}
-          src={embedUrl}
-          title={current?.title ?? "Video"}
-          className="absolute inset-0 h-full w-full rounded-2xl"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
-          style={{ border: 0 }}
+        <CustomVideoPlayer
+          key={`${current.id}-${currentIndex}`}
+          videoUrl={current.url}
+          aspectRatio="9:16"
+          autoPlay
         />
       </div>
 
       {/* Counter + title */}
       <div className="absolute bottom-6 left-0 right-0 text-center">
-        {current?.title && (
+        {current.title && (
           <p className="mb-1 text-sm font-medium text-white">{current.title}</p>
         )}
         {hasMultiple && (
@@ -317,11 +295,8 @@ export function VideoSection({ videoData }: VideoSectionProps) {
 
   if (videos.length === 0) return null;
 
-  // Single video: show legacy 16:9 layout with sandbox protection
+  // Single video: 16:9 custom player (no iframe visible, fully controlled)
   if (videos.length === 1 && !videoData.videos) {
-    const embedUrl = getSecureEmbedUrl(videos[0].url);
-    if (!embedUrl) return null;
-
     return (
       <section className="bg-[#0a0a0a] py-20 sm:py-24">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -340,17 +315,8 @@ export function VideoSection({ videoData }: VideoSectionProps) {
               {videoData.description}
             </p>
           )}
-          <div
-            className="relative overflow-hidden rounded-2xl shadow-2xl shadow-black/50 ring-1 ring-white/10"
-            style={{ paddingBottom: "56.25%" }}
-          >
-            <iframe
-              src={embedUrl}
-              title={videoData.title ?? "Video presentazione"}
-              className="absolute inset-0 h-full w-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
-            />
+          <div className="shadow-2xl shadow-black/50 ring-1 ring-white/10 rounded-2xl overflow-hidden">
+            <CustomVideoPlayer videoUrl={videos[0].url} aspectRatio="16:9" />
           </div>
         </div>
       </section>
@@ -361,7 +327,6 @@ export function VideoSection({ videoData }: VideoSectionProps) {
   return (
     <section className="bg-[#0a0a0a] py-20 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         {videoData.title && (
           <p className="mb-4 text-center text-sm font-medium uppercase tracking-[0.2em] text-white/40">
             Video
@@ -378,7 +343,6 @@ export function VideoSection({ videoData }: VideoSectionProps) {
           </p>
         )}
 
-        {/* Carousel */}
         <div
           ref={scrollRef}
           className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide sm:gap-6"
@@ -400,7 +364,6 @@ export function VideoSection({ videoData }: VideoSectionProps) {
           ))}
         </div>
 
-        {/* Scroll hint for many videos */}
         {videos.length > 4 && (
           <p className="mt-3 text-center text-xs text-white/30">
             Scorri per vedere altri video
@@ -408,7 +371,6 @@ export function VideoSection({ videoData }: VideoSectionProps) {
         )}
       </div>
 
-      {/* Modal */}
       <AnimatePresence>
         {activeIndex !== null && (
           <VideoModal
