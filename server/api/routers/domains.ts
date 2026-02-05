@@ -110,6 +110,12 @@ export const domainsRouter = createTRPCRouter({
         where: { id: input.id },
       });
       if (!domain) throw new TRPCError({ code: "NOT_FOUND" });
+      if (!domain.verificationTxt) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Record TXT di verifica non configurato per questo dominio",
+        });
+      }
 
       const expectedIP = process.env.NEXT_PUBLIC_VPS_IP || "193.203.190.63";
       const result = await verifyDNS(
