@@ -1,4 +1,5 @@
 import type { Consultant, LandingPage, Prisma } from "@prisma/client";
+import Script from "next/script";
 import { LandingHeader } from "@/components/landing/header";
 import { LandingFooter } from "@/components/landing/footer";
 import { CoverSection } from "@/components/landing/cover-section";
@@ -16,7 +17,8 @@ import { VideoSection } from "@/components/landing/video-section";
 import { PortfolioSection } from "@/components/landing/portfolio-section";
 import { QuoteSection } from "@/components/landing/quote-section";
 import { ContactForm } from "@/components/landing/contact-form";
-import { AnimateOnScroll } from "@/components/landing/animate-on-scroll";
+import { AnimateOnScroll, ScrollProgress } from "@/components/landing/animate-on-scroll";
+import { SectionDivider } from "@/components/landing/section-divider";
 
 interface LandingLayoutProps {
   consultant: Consultant;
@@ -41,8 +43,64 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
 
   const themeColor = consultant.themeColor || "#C21D17";
 
+  const address = [consultant.address, consultant.cap, consultant.city, consultant.province]
+    .filter(Boolean)
+    .join(", ");
+
+  // JSON-LD Person structured data
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: consultantFullName,
+    jobTitle: consultant.role,
+    worksFor: {
+      "@type": "Organization",
+      name: "Generali Italia",
+      url: "https://www.generali.it",
+    },
+    email: consultant.email,
+    ...(consultant.phone && { telephone: consultant.phone }),
+    ...(consultant.profileImage && { image: consultant.profileImage }),
+    ...(address && {
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: consultant.address,
+        postalCode: consultant.cap,
+        addressLocality: consultant.city,
+        addressRegion: consultant.province,
+        addressCountry: "IT",
+      },
+    }),
+    sameAs: [
+      consultant.linkedinUrl,
+      consultant.facebookUrl,
+      consultant.twitterUrl,
+      consultant.instagramUrl,
+      consultant.youtubeUrl,
+      consultant.websiteUrl,
+    ].filter(Boolean),
+  };
+
+  const ga4Id = landingPage.ga4MeasurementId;
+
   return (
     <div style={{ "--theme-color": themeColor } as React.CSSProperties}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {ga4Id && (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`}
+            strategy="afterInteractive"
+          />
+          <Script id="ga4-init" strategy="afterInteractive">
+            {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga4Id}');`}
+          </Script>
+        </>
+      )}
+      <ScrollProgress />
       <LandingHeader />
 
       <main>
@@ -57,9 +115,11 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
         />
 
         {/* 2. Profile */}
-        <AnimateOnScroll>
+        <AnimateOnScroll variant="fade-up">
           <ProfileSection consultant={consultant} />
         </AnimateOnScroll>
+
+        <SectionDivider className="py-4" />
 
         {/* 3. Map */}
         {isJsonObject(landingPage.mapData) && (
@@ -72,7 +132,7 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
 
         {/* 4. Summary */}
         {isJsonObject(landingPage.summaryData) && (
-          <AnimateOnScroll>
+          <AnimateOnScroll variant="blur">
             <SummarySection
               summaryData={landingPage.summaryData as unknown as Parameters<typeof SummarySection>[0]["summaryData"]}
             />
@@ -81,16 +141,18 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
 
         {/* 5. Skills */}
         {isJsonObject(landingPage.skillsData) && (
-          <AnimateOnScroll>
+          <AnimateOnScroll variant="scale">
             <SkillsSection
               skillsData={landingPage.skillsData as unknown as Parameters<typeof SkillsSection>[0]["skillsData"]}
             />
           </AnimateOnScroll>
         )}
 
+        <SectionDivider className="py-4" />
+
         {/* 6. Experiences */}
         {isJsonObject(landingPage.experiencesData) && (
-          <AnimateOnScroll>
+          <AnimateOnScroll variant="fade-left">
             <ExperiencesSection
               experiencesData={landingPage.experiencesData as unknown as Parameters<typeof ExperiencesSection>[0]["experiencesData"]}
             />
@@ -135,12 +197,14 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
 
         {/* 11. Testimonials */}
         {isJsonObject(landingPage.testimonialsData) && (
-          <AnimateOnScroll>
+          <AnimateOnScroll variant="fade-right">
             <TestimonialsSection
               testimonialsData={landingPage.testimonialsData as unknown as Parameters<typeof TestimonialsSection>[0]["testimonialsData"]}
             />
           </AnimateOnScroll>
         )}
+
+        <SectionDivider className="py-4" />
 
         {/* 12. Video */}
         {isJsonObject(landingPage.videoData) && (
@@ -162,7 +226,7 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
 
         {/* 14. Quote */}
         {isJsonObject(landingPage.quoteData) && (
-          <AnimateOnScroll>
+          <AnimateOnScroll variant="blur">
             <QuoteSection
               quoteData={landingPage.quoteData as unknown as Parameters<typeof QuoteSection>[0]["quoteData"]}
             />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,9 +38,11 @@ export function MapEditor({ data, onChange, consultantAddress }: MapEditorProps)
   });
 
   const [isGeocoding, setIsGeocoding] = useState(false);
+  const isGeocodingRef = useRef(false);
 
   useEffect(() => {
     const subscription = watch((values) => {
+      if (isGeocodingRef.current) return;
       onChange({
         address: values.address || undefined,
         latitude: values.latitude ? Number(values.latitude) : undefined,
@@ -53,6 +55,7 @@ export function MapEditor({ data, onChange, consultantAddress }: MapEditorProps)
 
   async function geocodeAddress(addressText: string) {
     if (!addressText.trim()) return;
+    isGeocodingRef.current = true;
     setIsGeocoding(true);
     try {
       const response = await fetch(
@@ -73,7 +76,16 @@ export function MapEditor({ data, onChange, consultantAddress }: MapEditorProps)
     } catch {
       alert("Errore durante la geocodifica. Riprova.");
     } finally {
+      isGeocodingRef.current = false;
       setIsGeocoding(false);
+      // Emit single onChange with all correct values after geocoding
+      const current = watch();
+      onChange({
+        address: current.address || undefined,
+        latitude: current.latitude ? Number(current.latitude) : undefined,
+        longitude: current.longitude ? Number(current.longitude) : undefined,
+        zoom: current.zoom ? Number(current.zoom) : 15,
+      });
     }
   }
 

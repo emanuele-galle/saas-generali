@@ -39,10 +39,10 @@ export function QuoteSection({ quoteData }: QuoteSectionProps) {
   }
 
   return (
-    <section className="relative overflow-hidden bg-[#111111] py-20 sm:py-28">
+    <section className="relative overflow-hidden py-20 sm:py-28" style={{ background: "linear-gradient(180deg, #111111 0%, color-mix(in srgb, var(--theme-color, #c21d17) 5%, #0a0a0a) 50%, #0a0a0a 100%)" }}>
       {/* Decorative elements */}
-      <div className="absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-      <div className="absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className="absolute left-0 top-0 h-px w-full" style={{ background: "linear-gradient(90deg, transparent, var(--theme-color, #c21d17), transparent)", opacity: 0.15 }} />
+      <div className="absolute bottom-0 left-0 h-px w-full" style={{ background: "linear-gradient(90deg, transparent, var(--theme-color, #c21d17), transparent)", opacity: 0.15 }} />
 
       <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
         <motion.div

@@ -20,9 +20,16 @@ export function TestimonialsSection({ testimonialsData }: TestimonialsSectionPro
   if (testimonials.length === 0) return null;
 
   return (
-    <section className="bg-[#111111] py-20 sm:py-24">
+    <section className="relative bg-[#111111] py-20 sm:py-24 overflow-hidden">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.03]"
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 0%, var(--theme-color, #c21d17), transparent 70%)",
+        }}
+      />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <p className="mb-4 text-center text-sm font-medium uppercase tracking-[0.2em] text-white/40">
+        <p className="mb-4 text-center text-sm font-medium uppercase tracking-[0.2em]" style={{ color: "var(--generali-gold, #D4A537)" }}>
           Testimonianze
         </p>
         <h2 className="mb-16 text-center text-3xl font-bold text-white sm:text-4xl">
@@ -33,9 +40,9 @@ export function TestimonialsSection({ testimonialsData }: TestimonialsSectionPro
           {testimonials.map((t, i) => (
             <div
               key={i}
-              className="group relative rounded-2xl border border-white/10 bg-white/[0.04] p-8 backdrop-blur-sm transition-colors hover:border-white/20 hover:bg-white/[0.07]"
+              className="group relative rounded-2xl border border-white/10 bg-white/[0.04] p-8 backdrop-blur-sm transition-all hover:border-[var(--theme-color,#C21D17)]/30 hover:bg-white/[0.07] hover:shadow-[0_0_30px_-10px_var(--theme-color,#C21D17)]"
             >
-              <Quote className="absolute right-6 top-6 h-8 w-8 text-white/[0.06]" />
+              <Quote className="absolute right-6 top-6 h-12 w-12 text-[var(--theme-color,#C21D17)]/[0.08]" />
 
               <div className="mb-5 flex gap-1">
                 {Array.from({ length: 5 }).map((_, s) => (
@@ -43,7 +50,7 @@ export function TestimonialsSection({ testimonialsData }: TestimonialsSectionPro
                     key={s}
                     className={`h-4 w-4 ${
                       s < t.rating
-                        ? "fill-amber-400 text-amber-400"
+                        ? "fill-[var(--generali-gold,#D4A537)] text-[var(--generali-gold,#D4A537)]"
                         : "text-white/20"
                     }`}
                   />

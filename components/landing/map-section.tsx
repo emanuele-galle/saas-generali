@@ -13,6 +13,15 @@ interface MapSectionProps {
 }
 
 export function MapSection({ mapData }: MapSectionProps) {
+  const hasValidCoords =
+    mapData.latitude != null &&
+    mapData.longitude != null &&
+    !isNaN(mapData.latitude) &&
+    !isNaN(mapData.longitude) &&
+    (mapData.latitude !== 0 || mapData.longitude !== 0);
+
+  if (!hasValidCoords) return null;
+
   const zoom = mapData.zoom ?? 15;
   const embedUrl = `https://maps.google.com/maps?q=${mapData.latitude},${mapData.longitude}&z=${zoom}&output=embed`;
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${mapData.latitude},${mapData.longitude}`;
@@ -20,7 +29,7 @@ export function MapSection({ mapData }: MapSectionProps) {
   return (
     <section className="bg-[#0f0f0f] py-20 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <p className="mb-4 text-center text-sm font-medium uppercase tracking-[0.2em] text-white/40">
+        <p className="mb-4 text-center text-sm font-medium uppercase tracking-[0.2em]" style={{ color: "var(--generali-gold, #D4A537)" }}>
           Dove trovarmi
         </p>
         <h2 className="mb-12 text-center text-3xl font-bold text-white sm:text-4xl">
