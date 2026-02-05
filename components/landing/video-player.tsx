@@ -628,7 +628,7 @@ export function CustomVideoPlayer({
   return (
     <div
       ref={containerRef}
-      className={`group/player relative overflow-hidden rounded-2xl bg-black ${className ?? ""}`}
+      className={`group/player relative overflow-hidden rounded-2xl bg-black [&_iframe]:!absolute [&_iframe]:!inset-0 [&_iframe]:!w-full [&_iframe]:!h-full ${className ?? ""}`}
       style={{ aspectRatio: ar }}
       onMouseMove={resetControlsTimer}
       onTouchStart={resetControlsTimer}
