@@ -11,12 +11,14 @@ import { Plus, Trash2 } from "lucide-react";
 interface FaqData {
   title?: string;
   subtitle?: string;
+  videoUrl?: string;
   items: { question: string; answer: string }[];
 }
 
 interface FaqFormValues {
   title: string;
   subtitle: string;
+  videoUrl: string;
   items: Array<{ question: string; answer: string }>;
 }
 
@@ -29,6 +31,7 @@ function toFormValues(data: FaqData): FaqFormValues {
   return {
     title: data.title ?? "",
     subtitle: data.subtitle ?? "",
+    videoUrl: data.videoUrl ?? "",
     items: (data.items ?? []).map((item) => ({
       question: item.question,
       answer: item.answer,
@@ -40,6 +43,7 @@ function toFaqData(values: FaqFormValues): FaqData {
   return {
     title: values.title || undefined,
     subtitle: values.subtitle || undefined,
+    videoUrl: values.videoUrl || undefined,
     items: values.items
       .filter((item) => item.question.trim() !== "")
       .map((item) => ({
@@ -127,6 +131,18 @@ export function FaqEditor({ data, onChange }: FaqEditorProps) {
         <Plus className="h-4 w-4" />
         Aggiungi FAQ
       </Button>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label htmlFor="faq-video">Video correlato (opzionale)</Label>
+        <Input
+          id="faq-video"
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          {...register("videoUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
+      </div>
     </div>
   );
 }

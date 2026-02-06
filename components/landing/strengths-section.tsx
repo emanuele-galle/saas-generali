@@ -12,6 +12,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { StaggerContainer, StaggerItem } from "@/components/landing/animate-on-scroll";
+import { InlineVideo } from "@/components/landing/inline-video";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Shield, Award, Heart, Users, Target, TrendingUp, Briefcase, Eye,
@@ -20,6 +21,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
 interface StrengthsData {
   title?: string;
   subtitle?: string;
+  videoUrl?: string;
   items: { title: string; description: string; icon?: string }[];
 }
 
@@ -36,30 +38,36 @@ export function StrengthsSection({ strengthsData }: StrengthsSectionProps) {
   return (
     <section
       id="punti-forza"
-      className="py-24 md:py-32 lg:py-40"
-      style={{
-        background:
-          "linear-gradient(180deg, #FAFAFA 0%, #F5F3F0 50%, #FAFAFA 100%)",
-      }}
+      className="section-warm py-24 lg:py-32"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Kicker */}
         <p
           className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.15em]"
           style={{ color: "var(--generali-gold, #D4A537)" }}
         >
           Punti di Forza
         </p>
-        <h2 className="mb-6 text-center text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-[-0.02em] text-[#1A1A1A]">
+
+        {/* Title */}
+        <h2 className="font-display mb-6 text-center text-[clamp(2rem,4vw,3.5rem)] tracking-[-0.02em] text-[#1A1A1A]">
           {title}
         </h2>
+
+        {/* Accent line */}
+        <div className="accent-line mx-auto mb-6" />
+
         {strengthsData.subtitle && (
-          <p className="mx-auto mb-16 max-w-2xl text-center text-lg text-[#6B7280]">
+          <p className="mx-auto mb-16 max-w-2xl text-center text-lg leading-relaxed text-[#6B7280]">
             {strengthsData.subtitle}
           </p>
         )}
 
+        {!strengthsData.subtitle && <div className="mb-16" />}
+
+        {/* Cards grid */}
         <StaggerContainer
-          className={`grid gap-6 ${
+          className={`grid gap-8 ${
             items.length <= 2
               ? "md:grid-cols-2"
               : items.length === 3
@@ -71,17 +79,55 @@ export function StrengthsSection({ strengthsData }: StrengthsSectionProps) {
             const IconComponent = item.icon ? ICON_MAP[item.icon] : null;
             return (
               <StaggerItem key={i}>
-                <div className="flex h-full rounded-2xl border border-[#E5E7EB] bg-white p-8 shadow-sm">
+                <div
+                  className="group relative flex h-full overflow-hidden rounded-2xl bg-white"
+                  style={{
+                    boxShadow:
+                      "0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06), 0 12px 40px rgba(0,0,0,0.04)",
+                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.transform = "translateY(-4px)";
+                    el.style.boxShadow =
+                      "0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.08), 0 20px 60px rgba(0,0,0,0.06)";
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.transform = "translateY(0)";
+                    el.style.boxShadow =
+                      "0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06), 0 12px 40px rgba(0,0,0,0.04)";
+                  }}
+                >
+                  {/* Left accent gradient bar */}
                   <div
-                    className="mr-6 w-1 shrink-0 rounded-full"
-                    style={{ backgroundColor: "var(--theme-color, #C21D17)" }}
+                    className="w-1.5 shrink-0"
+                    style={{
+                      background:
+                        "linear-gradient(to bottom, var(--theme-color, #C21D17), var(--generali-gold, #D4A537))",
+                    }}
                   />
-                  <div className="flex-1">
-                    <div className="mb-3 flex items-center gap-3">
+
+                  <div className="flex flex-1 flex-col p-8">
+                    <div className="mb-4 flex items-center gap-4">
+                      {/* Icon with gradient background circle */}
                       {IconComponent && (
-                        <IconComponent className="h-5 w-5 text-[#C21D17]" />
+                        <div
+                          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
+                          style={{
+                            background:
+                              "linear-gradient(135deg, rgba(194,29,23,0.1), rgba(212,165,55,0.08))",
+                          }}
+                        >
+                          <IconComponent
+                            className="h-5 w-5"
+                            style={{ color: "var(--theme-color, #C21D17)" }}
+                          />
+                        </div>
                       )}
-                      <h3 className="text-lg font-bold text-[#1A1A1A]">{item.title}</h3>
+                      <h3 className="text-lg font-bold text-[#1A1A1A]">
+                        {item.title}
+                      </h3>
                     </div>
                     <p className="text-base leading-relaxed text-[#6B7280]">
                       {item.description}
@@ -92,6 +138,10 @@ export function StrengthsSection({ strengthsData }: StrengthsSectionProps) {
             );
           })}
         </StaggerContainer>
+
+        {strengthsData.videoUrl && (
+          <InlineVideo url={strengthsData.videoUrl} />
+        )}
       </div>
     </section>
   );

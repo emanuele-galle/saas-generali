@@ -13,6 +13,7 @@ interface ProcessData {
   subtitle?: string;
   ctaText?: string;
   ctaLink?: string;
+  videoUrl?: string;
   steps: { title: string; description: string }[];
 }
 
@@ -21,6 +22,7 @@ interface ProcessFormValues {
   subtitle: string;
   ctaText: string;
   ctaLink: string;
+  videoUrl: string;
   steps: Array<{ title: string; description: string }>;
 }
 
@@ -35,6 +37,7 @@ function toFormValues(data: ProcessData): ProcessFormValues {
     subtitle: data.subtitle ?? "",
     ctaText: data.ctaText ?? "",
     ctaLink: data.ctaLink ?? "",
+    videoUrl: data.videoUrl ?? "",
     steps: (data.steps ?? []).map((s) => ({
       title: s.title,
       description: s.description,
@@ -48,6 +51,7 @@ function toProcessData(values: ProcessFormValues): ProcessData {
     subtitle: values.subtitle || undefined,
     ctaText: values.ctaText || undefined,
     ctaLink: values.ctaLink || undefined,
+    videoUrl: values.videoUrl || undefined,
     steps: values.steps
       .filter((s) => s.title.trim() !== "")
       .map((s) => ({
@@ -152,6 +156,18 @@ export function ProcessEditor({ data, onChange }: ProcessEditorProps) {
           placeholder="Es. #contatti"
           {...register("ctaLink")}
         />
+      </div>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label htmlFor="process-video">Video correlato (opzionale)</Label>
+        <Input
+          id="process-video"
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          {...register("videoUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
       </div>
     </div>
   );

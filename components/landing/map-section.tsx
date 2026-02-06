@@ -1,12 +1,12 @@
 "use client";
 
-import { MapPin, Navigation } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { BlurText } from "@/components/ui/blur-text";
+import { motion } from "framer-motion";
+import { MapPin } from "lucide-react";
+import { AnimateOnScroll } from "@/components/landing/animate-on-scroll";
 
 interface MapData {
-  latitude: number;
-  longitude: number;
+  latitude?: number;
+  longitude?: number;
   zoom?: number;
   address?: string;
 }
@@ -16,82 +16,90 @@ interface MapSectionProps {
 }
 
 export function MapSection({ mapData }: MapSectionProps) {
-  const hasValidCoords =
-    mapData.latitude != null &&
-    mapData.longitude != null &&
-    !isNaN(mapData.latitude) &&
-    !isNaN(mapData.longitude) &&
-    (mapData.latitude !== 0 || mapData.longitude !== 0);
+  const { latitude, longitude, zoom = 15, address } = mapData;
 
-  if (!hasValidCoords) return null;
+  // Don't render if no valid coordinates
+  if (
+    latitude == null ||
+    longitude == null ||
+    isNaN(latitude) ||
+    isNaN(longitude) ||
+    (latitude === 0 && longitude === 0)
+  ) {
+    return null;
+  }
 
-  const zoom = mapData.zoom ?? 15;
-  const embedUrl = `https://maps.google.com/maps?q=${mapData.latitude},${mapData.longitude}&z=${zoom}&output=embed`;
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${mapData.latitude},${mapData.longitude}`;
+  const mapEmbedUrl = `https://maps.google.com/maps?q=${latitude},${longitude}&z=${zoom}&output=embed`;
 
   return (
-    <section className="noise-overlay relative overflow-hidden py-24 sm:py-32">
-      <div className="absolute inset-0 bg-[#0b0b0b]" />
+    <section id="mappa" className="section-premium py-24 md:py-32 lg:py-40">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <AnimateOnScroll variant="fade-up">
+          <div className="mb-12 text-center">
+            <p
+              className="mb-3 text-xs font-semibold uppercase tracking-[0.15em]"
+              style={{ color: "var(--generali-gold, #D4A537)" }}
+            >
+              Posizione
+            </p>
+            <h2 className="font-display text-[clamp(2rem,4vw,3.5rem)] font-extrabold leading-tight tracking-[-0.02em] text-foreground">
+              Dove Trovarmi
+            </h2>
+            <div className="accent-line mx-auto mt-4" />
+          </div>
+        </AnimateOnScroll>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <p
-          className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.3em]"
-          style={{ color: "var(--generali-gold, #D4A537)" }}
-        >
-          Dove trovarmi
-        </p>
-        <h2 className="mb-14 text-center text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-          <BlurText text="La mia sede" delay={80} />
-        </h2>
-
-        <div className="overflow-hidden rounded-2xl border border-white/[0.08] shadow-2xl shadow-black/40">
-          <div className="relative h-[500px] w-full">
+        {/* Map Container */}
+        <AnimateOnScroll variant="scale">
+          <div className="relative overflow-hidden rounded-2xl shadow-[0_8px_60px_rgba(0,0,0,0.1)]">
             <iframe
-              src={embedUrl}
+              src={mapEmbedUrl}
               width="100%"
-              height="100%"
+              className="h-[400px] md:h-[500px]"
               style={{ border: 0 }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Posizione consulente"
+              title="Mappa posizione"
             />
-          </div>
 
-          {mapData.address && (
-            <div className="glass-heavy flex flex-col items-start justify-between gap-4 p-5 sm:flex-row sm:items-center">
-              <div className="flex items-center gap-3">
+            {/* Address Overlay Card */}
+            {address && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+                className="absolute bottom-4 left-4 z-10 max-w-xs sm:bottom-6 sm:left-6"
+              >
                 <div
-                  className="flex h-10 w-10 items-center justify-center rounded-full"
+                  className="flex items-start gap-3 rounded-xl border border-white/20 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-sm"
                   style={{
-                    background:
-                      "linear-gradient(135deg, rgba(194,29,23,0.15), rgba(212,165,55,0.1))",
+                    boxShadow:
+                      "0 4px 24px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.06)",
                   }}
                 >
-                  <MapPin className="h-5 w-5 shrink-0 text-[var(--theme-color,#C21D17)]" />
+                  <span
+                    className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(194,29,23,0.1), rgba(212,165,55,0.08))",
+                    }}
+                  >
+                    <MapPin
+                      className="h-4 w-4"
+                      style={{ color: "var(--theme-color, #C21D17)" }}
+                    />
+                  </span>
+                  <p className="text-sm font-medium leading-snug text-[#1A1A1A]">
+                    {address}
+                  </p>
                 </div>
-                <p className="text-sm font-medium text-white/90">
-                  {mapData.address}
-                </p>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08] hover:text-white"
-                asChild
-              >
-                <a
-                  href={directionsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Navigation className="h-4 w-4" />
-                  Indicazioni stradali
-                </a>
-              </Button>
-            </div>
-          )}
-        </div>
+              </motion.div>
+            )}
+          </div>
+        </AnimateOnScroll>
       </div>
     </section>
   );

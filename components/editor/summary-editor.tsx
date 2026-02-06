@@ -13,6 +13,7 @@ interface SummaryData {
   highlights?: string[];
   quote?: string;
   imageUrl?: string;
+  videoUrl?: string;
 }
 
 interface SummaryFormValues {
@@ -20,6 +21,7 @@ interface SummaryFormValues {
   highlights: Array<{ value: string }>;
   quote: string;
   imageUrl: string;
+  videoUrl: string;
 }
 
 interface SummaryEditorProps {
@@ -33,6 +35,7 @@ function toFormValues(data: SummaryData): SummaryFormValues {
     highlights: (data.highlights ?? []).map((h) => ({ value: h })),
     quote: data.quote ?? "",
     imageUrl: data.imageUrl ?? "",
+    videoUrl: data.videoUrl ?? "",
   };
 }
 
@@ -44,6 +47,7 @@ function toSummaryData(values: SummaryFormValues): SummaryData {
       .filter((v) => v.trim() !== ""),
     quote: values.quote || undefined,
     imageUrl: values.imageUrl || undefined,
+    videoUrl: values.videoUrl || undefined,
   };
 }
 
@@ -131,6 +135,18 @@ export function SummaryEditor({ data, onChange }: SummaryEditorProps) {
           <Plus className="h-4 w-4" />
           Aggiungi punto di forza
         </Button>
+      </div>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label htmlFor="summary-video">Video correlato (opzionale)</Label>
+        <Input
+          id="summary-video"
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          {...register("videoUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
       </div>
     </div>
   );

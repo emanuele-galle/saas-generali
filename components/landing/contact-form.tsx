@@ -11,8 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Send, Loader2, Mail, Phone } from "lucide-react";
-import { BlurText } from "@/components/ui/blur-text";
+import { Send, Loader2, Mail, Phone, MapPin } from "lucide-react";
 
 const contactSchema = z.object({
   firstName: z.string().min(1, "Il nome è obbligatorio"),
@@ -25,6 +24,13 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
+interface MapData {
+  latitude: number;
+  longitude: number;
+  zoom?: number;
+  address?: string;
+}
+
 interface ContactFormProps {
   landingPageId: string;
   consultantName: string;
@@ -32,6 +38,8 @@ interface ContactFormProps {
   consultantPhone?: string;
   consultantImage?: string | null;
   consultantRole?: string;
+  consultantAddress?: string;
+  mapData?: MapData;
 }
 
 export function ContactForm({
@@ -41,6 +49,8 @@ export function ContactForm({
   consultantPhone,
   consultantImage,
   consultantRole,
+  consultantAddress,
+  mapData,
 }: ContactFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const formLoadedAt = useRef(Date.now());
@@ -68,7 +78,6 @@ export function ContactForm({
 
   async function onSubmit(data: ContactFormValues) {
     setIsSubmitting(true);
-
     try {
       const honeypotEl = document.getElementById("contact_website") as HTMLInputElement | null;
       const honeypot = honeypotEl?.value || "";
@@ -86,9 +95,7 @@ export function ContactForm({
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(
-          errorData?.message ?? "Errore durante l'invio del messaggio"
-        );
+        throw new Error(errorData?.message ?? "Errore durante l'invio del messaggio");
       }
 
       toast.success("Messaggio inviato con successo!", {
@@ -97,229 +104,288 @@ export function ContactForm({
       reset();
       formLoadedAt.current = Date.now();
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Si è verificato un errore. Riprova più tardi.";
+      const message = error instanceof Error
+        ? error.message
+        : "Si è verificato un errore. Riprova più tardi.";
       toast.error("Errore nell'invio", { description: message });
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  const hasContactInfo = consultantEmail || consultantPhone || consultantImage;
+  // Map embed
+  const hasMap = mapData &&
+    mapData.latitude != null &&
+    mapData.longitude != null &&
+    !isNaN(mapData.latitude) &&
+    !isNaN(mapData.longitude) &&
+    (mapData.latitude !== 0 || mapData.longitude !== 0);
+
+  const mapEmbedUrl = hasMap
+    ? `https://maps.google.com/maps?q=${mapData!.latitude},${mapData!.longitude}&z=${mapData!.zoom ?? 15}&output=embed`
+    : null;
+
+  const inputClasses = "bg-white/5 border-white/10 rounded-lg text-white placeholder:text-white/40 focus:border-[var(--theme-color)] focus-visible:ring-[var(--theme-color)]";
 
   return (
-    <section id="contatti" className="noise-overlay relative overflow-hidden py-24 sm:py-32">
-      <div className="absolute inset-0 bg-[#0c0c0c]" />
+    <section
+      id="contatti"
+      className="relative py-24 md:py-32 lg:py-40 overflow-hidden"
+      style={{
+        background: "linear-gradient(180deg, #0c0c0c 0%, color-mix(in srgb, var(--theme-color) 3%, #080808) 50%, #050505 100%)",
+      }}
+    >
+      {/* Top accent line */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.03]"
+        className="absolute top-0 left-0 right-0 h-px"
         style={{
-          background:
-            "radial-gradient(ellipse 60% 40% at 50% 100%, var(--theme-color, #c21d17), transparent)",
+          background: `linear-gradient(90deg, transparent, var(--theme-color), #D4A537, var(--theme-color), transparent)`,
+          opacity: 0.4,
         }}
       />
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <p
-          className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.3em]"
-          style={{ color: "var(--generali-gold, #D4A537)" }}
-        >
-          Contatti
-        </p>
-        <h2 className="mb-20 text-center text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-          <BlurText text="Richiedi un appuntamento" delay={50} />
-        </h2>
 
-        <div className={`mx-auto ${hasContactInfo ? "max-w-5xl" : "max-w-2xl"}`}>
-          <div className={`flex flex-col gap-10 ${hasContactInfo ? "lg:flex-row lg:gap-16" : ""}`}>
-            {/* Left Column - Consultant Info */}
-            {hasContactInfo && (
-              <div className="flex flex-col items-center text-center lg:w-2/5 lg:items-start lg:text-left lg:pt-4">
-                {consultantImage && (
-                  <div className="relative mb-6 h-20 w-20 overflow-hidden rounded-full ring-2 ring-[var(--theme-color,#C21D17)] ring-offset-2 ring-offset-[#0c0c0c]">
-                    <Image
-                      src={consultantImage}
-                      alt={consultantName}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-                <h3 className="text-xl font-bold text-white">
-                  {consultantName}
-                </h3>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-start">
+          {/* Left Column: Consultant profile + Info + Map */}
+          <div>
+            {/* Consultant profile */}
+            <div className="mb-8 flex items-center gap-5">
+              {consultantImage && (
+                <div
+                  className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full ring-2 ring-offset-2 ring-offset-[#0c0c0c]"
+                  style={{ "--tw-ring-color": "var(--theme-color)" } as React.CSSProperties}
+                >
+                  <Image
+                    src={consultantImage}
+                    alt={consultantName}
+                    fill
+                    className="object-cover"
+                    sizes="80px"
+                    unoptimized
+                  />
+                </div>
+              )}
+              <div>
+                <h3 className="text-lg font-bold text-white">{consultantName}</h3>
                 {consultantRole && (
-                  <p className="mt-1 text-sm font-medium text-[var(--theme-color,#C21D17)]">
-                    {consultantRole}
-                  </p>
+                  <p className="text-sm text-white/50">{consultantRole}</p>
                 )}
+              </div>
+            </div>
 
-                <div className="my-6 h-px w-16 bg-white/10" />
+            <p
+              className="mb-3 text-xs font-semibold uppercase tracking-[0.15em]"
+              style={{ color: "#D4A537" }}
+            >
+              Contatti
+            </p>
+            <h2 className="mb-4 font-display text-[clamp(2rem,4vw,3.5rem)] tracking-[-0.02em] text-white">
+              Iniziamo a parlare
+            </h2>
+            <p className="mb-10 max-w-md text-base text-white/50 leading-relaxed">
+              Compila il modulo per richiedere una consulenza personalizzata. Ti risponderò entro 24 ore.
+            </p>
 
-                <div className="space-y-4">
-                  {consultantEmail && (
-                    <div className="flex items-center gap-3">
-                      <Mail className="h-4 w-4 shrink-0 text-[var(--theme-color,#C21D17)]" />
-                      <a href={`mailto:${consultantEmail}`} className="text-sm text-white/70 hover:text-white transition-colors">
-                        {consultantEmail}
-                      </a>
-                    </div>
-                  )}
-                  {consultantPhone && (
-                    <div className="flex items-center gap-3">
-                      <Phone className="h-4 w-4 shrink-0 text-[var(--theme-color,#C21D17)]" />
-                      <a href={`tel:${consultantPhone}`} className="text-sm text-white/70 hover:text-white transition-colors">
-                        {consultantPhone}
-                      </a>
-                    </div>
+            {/* Contact info */}
+            <div className="mb-10 space-y-5">
+              {consultantEmail && (
+                <a href={`mailto:${consultantEmail}`} className="group flex items-center gap-4 text-white/60 transition-colors hover:text-white">
+                  <span
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors"
+                    style={{ backgroundColor: "color-mix(in srgb, var(--theme-color) 15%, transparent)" }}
+                  >
+                    <Mail className="h-4 w-4" style={{ color: "var(--theme-color)" }} />
+                  </span>
+                  <span className="text-base">{consultantEmail}</span>
+                </a>
+              )}
+              {consultantPhone && (
+                <a href={`tel:${consultantPhone}`} className="group flex items-center gap-4 text-white/60 transition-colors hover:text-white">
+                  <span
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors"
+                    style={{ backgroundColor: "color-mix(in srgb, var(--theme-color) 15%, transparent)" }}
+                  >
+                    <Phone className="h-4 w-4" style={{ color: "var(--theme-color)" }} />
+                  </span>
+                  <span className="text-base">{consultantPhone}</span>
+                </a>
+              )}
+              {consultantAddress && (
+                <div className="flex items-start gap-4 text-white/60">
+                  <span
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                    style={{ backgroundColor: "color-mix(in srgb, var(--theme-color) 15%, transparent)" }}
+                  >
+                    <MapPin className="h-4 w-4" style={{ color: "var(--theme-color)" }} />
+                  </span>
+                  <span className="pt-2 text-base">{consultantAddress}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Map */}
+            {mapEmbedUrl && (
+              <div
+                className="overflow-hidden rounded-2xl ring-1 ring-white/10"
+              >
+                <iframe
+                  src={mapEmbedUrl}
+                  width="100%"
+                  height="260"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Posizione"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Form */}
+          <div>
+            <div
+              className="relative rounded-2xl border border-white/[0.15] bg-white/[0.04] p-6 sm:p-8"
+              style={{
+                boxShadow: "0 4px 40px color-mix(in srgb, var(--theme-color) 6%, transparent)",
+              }}
+            >
+              {/* Gold accent line at top of card */}
+              <div
+                className="absolute top-0 left-6 right-6 h-px sm:left-8 sm:right-8"
+                style={{
+                  background: "linear-gradient(90deg, transparent, #D4A537, transparent)",
+                  opacity: 0.5,
+                }}
+              />
+
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                {/* Honeypot */}
+                <div style={{ position: "absolute", left: "-9999px", opacity: 0 }} aria-hidden="true">
+                  <input type="text" id="contact_website" name="website" tabIndex={-1} autoComplete="off" />
+                </div>
+
+                {/* Name Fields */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName" className="text-sm font-medium uppercase tracking-wide text-white/70">
+                      Nome *
+                    </Label>
+                    <Input
+                      id="firstName"
+                      placeholder="Mario"
+                      className={inputClasses}
+                      {...register("firstName")}
+                      aria-invalid={!!errors.firstName}
+                    />
+                    {errors.firstName && (
+                      <p className="text-xs text-red-400">{errors.firstName.message}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName" className="text-sm font-medium uppercase tracking-wide text-white/70">
+                      Cognome *
+                    </Label>
+                    <Input
+                      id="lastName"
+                      placeholder="Rossi"
+                      className={inputClasses}
+                      {...register("lastName")}
+                      aria-invalid={!!errors.lastName}
+                    />
+                    {errors.lastName && (
+                      <p className="text-xs text-red-400">{errors.lastName.message}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Email */}
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-medium uppercase tracking-wide text-white/70">
+                    Email *
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="mario.rossi@email.com"
+                    className={inputClasses}
+                    {...register("email")}
+                    aria-invalid={!!errors.email}
+                  />
+                  {errors.email && (
+                    <p className="text-xs text-red-400">{errors.email.message}</p>
                   )}
                 </div>
 
-                <p className="mt-8 text-lg font-medium text-white/50">
-                  Parliamo del tuo futuro
-                </p>
-              </div>
-            )}
+                {/* Phone */}
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-sm font-medium uppercase tracking-wide text-white/70">
+                    Telefono
+                  </Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="+39 333 1234567"
+                    className={inputClasses}
+                    {...register("phone")}
+                  />
+                </div>
 
-            {/* Right Column - Form */}
-            <div className={hasContactInfo ? "lg:w-3/5" : "w-full"}>
-              <div className="glass-heavy rounded-2xl p-6 sm:p-8">
-                <form
-                  onSubmit={handleSubmit(onSubmit)}
-                  className="space-y-5"
+                {/* Message */}
+                <div className="space-y-2">
+                  <Label htmlFor="message" className="text-sm font-medium uppercase tracking-wide text-white/70">
+                    Messaggio
+                  </Label>
+                  <Textarea
+                    id="message"
+                    placeholder="Scrivi il tuo messaggio..."
+                    rows={4}
+                    className={inputClasses}
+                    {...register("message")}
+                  />
+                </div>
+
+                {/* Existing Client */}
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="isExistingClient"
+                    checked={isExistingClient}
+                    onCheckedChange={(checked) => setValue("isExistingClient", checked === true)}
+                    className="border-white/20 data-[state=checked]:bg-[var(--theme-color)] data-[state=checked]:border-[var(--theme-color)]"
+                  />
+                  <Label htmlFor="isExistingClient" className="cursor-pointer text-sm font-normal text-white/70">
+                    Sono già cliente
+                  </Label>
+                </div>
+
+                {/* Submit */}
+                <Button
+                  type="submit"
+                  className="w-full rounded-full py-3 text-base font-bold text-white transition-all duration-300 hover:shadow-[0_0_30px_rgba(194,29,23,0.3)]"
+                  style={{
+                    backgroundColor: "var(--theme-color)",
+                  }}
+                  size="lg"
+                  disabled={isSubmitting}
                 >
-                  {/* Honeypot */}
-                  <div
-                    style={{ position: "absolute", left: "-9999px", opacity: 0 }}
-                    aria-hidden="true"
-                  >
-                    <input
-                      type="text"
-                      id="contact_website"
-                      name="website"
-                      tabIndex={-1}
-                      autoComplete="off"
-                    />
-                  </div>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Invio in corso...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4" />
+                      Invia richiesta
+                    </>
+                  )}
+                </Button>
 
-                  {/* Name Fields */}
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName" className="text-white/70">Nome *</Label>
-                      <Input
-                        id="firstName"
-                        placeholder="Mario"
-                        className="border-white/10 bg-white/[0.06] text-white placeholder:text-white/30 focus-visible:ring-[var(--theme-color,#C21D17)]"
-                        {...register("firstName")}
-                        aria-invalid={!!errors.firstName}
-                      />
-                      {errors.firstName && (
-                        <p className="text-xs text-red-400">
-                          {errors.firstName.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName" className="text-white/70">Cognome *</Label>
-                      <Input
-                        id="lastName"
-                        placeholder="Rossi"
-                        className="border-white/10 bg-white/[0.06] text-white placeholder:text-white/30 focus-visible:ring-[var(--theme-color,#C21D17)]"
-                        {...register("lastName")}
-                        aria-invalid={!!errors.lastName}
-                      />
-                      {errors.lastName && (
-                        <p className="text-xs text-red-400">
-                          {errors.lastName.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Email */}
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-white/70">Email *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="mario.rossi@email.com"
-                      className="border-white/10 bg-white/[0.06] text-white placeholder:text-white/30 focus-visible:ring-[var(--theme-color,#C21D17)]"
-                      {...register("email")}
-                      aria-invalid={!!errors.email}
-                    />
-                    {errors.email && (
-                      <p className="text-xs text-red-400">
-                        {errors.email.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Phone */}
-                  <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-white/70">Telefono</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="+39 333 1234567"
-                      className="border-white/10 bg-white/[0.06] text-white placeholder:text-white/30 focus-visible:ring-[var(--theme-color,#C21D17)]"
-                      {...register("phone")}
-                    />
-                  </div>
-
-                  {/* Message */}
-                  <div className="space-y-2">
-                    <Label htmlFor="message" className="text-white/70">Messaggio</Label>
-                    <Textarea
-                      id="message"
-                      placeholder="Scrivi il tuo messaggio..."
-                      rows={4}
-                      className="border-white/10 bg-white/[0.06] text-white placeholder:text-white/30 focus-visible:ring-[var(--theme-color,#C21D17)]"
-                      {...register("message")}
-                    />
-                  </div>
-
-                  {/* Existing Client */}
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="isExistingClient"
-                      checked={isExistingClient}
-                      onCheckedChange={(checked) =>
-                        setValue("isExistingClient", checked === true)
-                      }
-                      className="border-white/20 data-[state=checked]:bg-[var(--theme-color,#C21D17)] data-[state=checked]:border-[var(--theme-color,#C21D17)]"
-                    />
-                    <Label
-                      htmlFor="isExistingClient"
-                      className="cursor-pointer text-sm font-normal text-white/70"
-                    >
-                      Sono già cliente
-                    </Label>
-                  </div>
-
-                  {/* Submit */}
-                  <Button
-                    type="submit"
-                    className="w-full text-white font-semibold tracking-wide shadow-lg transition-all hover:shadow-xl"
-                    style={{
-                      background: `linear-gradient(135deg, var(--theme-color, #C21D17), color-mix(in srgb, var(--theme-color, #C21D17) 70%, var(--generali-gold, #D4A537)))`,
-                    }}
-                    size="lg"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Invio in corso...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-4 w-4" />
-                        Invia richiesta
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </div>
+                {/* Privacy note */}
+                <p className="text-center text-xs text-white/30 leading-relaxed">
+                  Inviando il modulo acconsenti al trattamento dei dati personali per essere ricontattato.
+                </p>
+              </form>
             </div>
           </div>
         </div>

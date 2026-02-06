@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 
@@ -21,9 +22,11 @@ interface Skill {
 
 interface SkillsData {
   skills: Skill[];
+  videoUrl?: string;
 }
 
 interface SkillsFormValues {
+  videoUrl: string;
   skills: Array<{ name: string; description: string; icon: string; imageIcon: string; imageUrl: string; linkUrl: string; forWho: string; whatWeDo: string; benefit: string }>;
 }
 
@@ -34,6 +37,7 @@ interface SkillsEditorProps {
 
 function toFormValues(data: SkillsData): SkillsFormValues {
   return {
+    videoUrl: data.videoUrl ?? "",
     skills: (data.skills ?? []).map((s) => ({
       name: s.name,
       description: s.description ?? "",
@@ -50,6 +54,7 @@ function toFormValues(data: SkillsData): SkillsFormValues {
 
 function toSkillsData(values: SkillsFormValues): SkillsData {
   return {
+    videoUrl: values.videoUrl || undefined,
     skills: values.skills
       .filter((s) => s.name.trim() !== "")
       .map((s) => ({
@@ -154,6 +159,18 @@ export function SkillsEditor({ data, onChange }: SkillsEditorProps) {
         <Plus className="h-4 w-4" />
         Aggiungi competenza
       </Button>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label htmlFor="skills-video">Video correlato (opzionale)</Label>
+        <Input
+          id="skills-video"
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          {...register("videoUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
+      </div>
     </div>
   );
 }

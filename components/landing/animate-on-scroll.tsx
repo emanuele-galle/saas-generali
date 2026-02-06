@@ -11,12 +11,18 @@ import {
 import type { ReactNode } from "react";
 
 /* ------------------------------------------------------------------ */
+/*  Shared easing curves                                               */
+/* ------------------------------------------------------------------ */
+
+const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
+
+/* ------------------------------------------------------------------ */
 /*  AnimateOnScroll - Enhanced with variant support                    */
 /* ------------------------------------------------------------------ */
 
 const variantMap = {
   "fade-up": {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0 },
   },
   "fade-left": {
@@ -28,7 +34,7 @@ const variantMap = {
     visible: { opacity: 1, x: 0 },
   },
   scale: {
-    hidden: { opacity: 0, scale: 0.9 },
+    hidden: { opacity: 0, scale: 0.92 },
     visible: { opacity: 1, scale: 1 },
   },
   blur: {
@@ -55,8 +61,8 @@ export function AnimateOnScroll({
     <motion.div
       initial={v.hidden}
       whileInView={v.visible}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay, ease: "easeOut" }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.7, delay, ease: EASE_OUT_EXPO }}
       className={className}
     >
       {children}
@@ -71,20 +77,23 @@ export function AnimateOnScroll({
 export function StaggerContainer({
   children,
   className,
+  style,
 }: {
   children: ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true, margin: "-60px" }}
       variants={{
         hidden: {},
-        visible: { transition: { staggerChildren: 0.1 } },
+        visible: { transition: { staggerChildren: 0.12 } },
       }}
       className={className}
+      style={style}
     >
       {children}
     </motion.div>
@@ -101,11 +110,11 @@ export function StaggerItem({
   return (
     <motion.div
       variants={{
-        hidden: { opacity: 0, y: 20 },
+        hidden: { opacity: 0, y: 24 },
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.4, ease: "easeOut" },
+          transition: { duration: 0.6, ease: EASE_OUT_EXPO },
         },
       }}
       className={className}
@@ -171,7 +180,7 @@ export function TextReveal({
       variants={{
         hidden: {},
         visible: {
-          transition: { staggerChildren: mode === "word" ? 0.08 : 0.03, delayChildren: delay },
+          transition: { staggerChildren: mode === "word" ? 0.06 : 0.025, delayChildren: delay },
         },
       }}
       className={className}
@@ -180,12 +189,12 @@ export function TextReveal({
         <motion.span
           key={i}
           variants={{
-            hidden: { opacity: 0, y: 10, filter: "blur(4px)" },
+            hidden: { opacity: 0, y: 8, filter: "blur(3px)" },
             visible: {
               opacity: 1,
               y: 0,
               filter: "blur(0px)",
-              transition: { duration: 0.3, ease: "easeOut" },
+              transition: { duration: 0.4, ease: EASE_OUT_EXPO },
             },
           }}
           className="inline-block"

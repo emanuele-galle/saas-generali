@@ -17,9 +17,11 @@ interface FocusArticle {
 
 interface FocusOnData {
   articles: FocusArticle[];
+  videoUrl?: string;
 }
 
 interface FocusOnFormValues {
+  videoUrl: string;
   articles: Array<{
     title: string;
     excerpt: string;
@@ -35,6 +37,7 @@ interface FocusOnEditorProps {
 
 function toFormValues(data: FocusOnData): FocusOnFormValues {
   return {
+    videoUrl: data.videoUrl ?? "",
     articles: (data.articles ?? []).map((a) => ({
       title: a.title,
       excerpt: a.excerpt ?? "",
@@ -46,6 +49,7 @@ function toFormValues(data: FocusOnData): FocusOnFormValues {
 
 function toFocusOnData(values: FocusOnFormValues): FocusOnData {
   return {
+    videoUrl: values.videoUrl || undefined,
     articles: values.articles
       .filter((a) => a.title.trim() !== "" || a.linkUrl.trim() !== "")
       .map((a) => ({
@@ -130,6 +134,18 @@ export function FocusOnEditor({ data, onChange }: FocusOnEditorProps) {
         <Plus className="h-4 w-4" />
         Aggiungi articolo
       </Button>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label htmlFor="focuson-video">Video correlato (opzionale)</Label>
+        <Input
+          id="focuson-video"
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          {...register("videoUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
+      </div>
     </div>
   );
 }

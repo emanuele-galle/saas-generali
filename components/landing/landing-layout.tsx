@@ -3,20 +3,24 @@ import Script from "next/script";
 import { LandingHeader } from "@/components/landing/header";
 import { LandingFooter } from "@/components/landing/footer";
 import { CoverSection } from "@/components/landing/cover-section";
+import { ProfileSection } from "@/components/landing/profile-section";
+import { ValuesSection } from "@/components/landing/values-section";
+import { MapSection } from "@/components/landing/map-section";
 import { SummarySection } from "@/components/landing/summary-section";
 import { SkillsSection } from "@/components/landing/skills-section";
-import { InterestsSection } from "@/components/landing/interests-section";
-import { BannerSection } from "@/components/landing/banner-section";
-import { PortfolioSection } from "@/components/landing/portfolio-section";
-import { TestimonialsSection } from "@/components/landing/testimonials-section";
-import { VideoSection } from "@/components/landing/video-section";
-import { ExperiencesSection } from "@/components/landing/experiences-section";
-import { QuoteSection } from "@/components/landing/quote-section";
-import { ValuesSection } from "@/components/landing/values-section";
 import { ProcessSection } from "@/components/landing/process-section";
 import { MethodSection } from "@/components/landing/method-section";
 import { StrengthsSection } from "@/components/landing/strengths-section";
+import { ExperiencesSection } from "@/components/landing/experiences-section";
+import { EducationSection } from "@/components/landing/education-section";
+import { InterestsSection } from "@/components/landing/interests-section";
+import { BannerSection } from "@/components/landing/banner-section";
+import { FocusOnSection } from "@/components/landing/focus-on-section";
+import { TestimonialsSection } from "@/components/landing/testimonials-section";
+import { VideoSection } from "@/components/landing/video-section";
+import { PortfolioSection } from "@/components/landing/portfolio-section";
 import { FaqSection } from "@/components/landing/faq-section";
+import { QuoteSection } from "@/components/landing/quote-section";
 import { ContactForm } from "@/components/landing/contact-form";
 import { AnimateOnScroll, ScrollProgress } from "@/components/landing/animate-on-scroll";
 
@@ -46,23 +50,23 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
     .filter(Boolean)
     .join(", ");
 
+  const hasValues = isJsonObject(landingPage.valuesData);
+  const hasMap = isJsonObject(landingPage.mapData);
   const hasSummary = isJsonObject(landingPage.summaryData);
   const hasSkills = isJsonObject(landingPage.skillsData);
-  const hasInterests = isJsonObject(landingPage.interestsData);
-  const hasBanner = isJsonObject(landingPage.bannerData);
-  const hasPortfolio = isJsonObject(landingPage.portfolioData);
-  const hasFocusOn = isJsonObject(landingPage.focusOnData);
-  const hasTestimonials = isJsonObject(landingPage.testimonialsData);
-  const hasVideo = isJsonObject(landingPage.videoData);
-  const hasExperiences = isJsonObject(landingPage.experiencesData);
-  const hasEducation = isJsonObject(landingPage.educationData);
-  const hasQuote = isJsonObject(landingPage.quoteData);
-  const hasMap = isJsonObject(landingPage.mapData);
-  const hasValues = isJsonObject(landingPage.valuesData);
   const hasProcess = isJsonObject(landingPage.processData);
   const hasMethod = isJsonObject(landingPage.methodData);
   const hasStrengths = isJsonObject(landingPage.strengthsData);
+  const hasExperiences = isJsonObject(landingPage.experiencesData);
+  const hasEducation = isJsonObject(landingPage.educationData);
+  const hasInterests = isJsonObject(landingPage.interestsData);
+  const hasBanner = isJsonObject(landingPage.bannerData);
+  const hasFocusOn = isJsonObject(landingPage.focusOnData);
+  const hasTestimonials = isJsonObject(landingPage.testimonialsData);
+  const hasVideo = isJsonObject(landingPage.videoData);
+  const hasPortfolio = isJsonObject(landingPage.portfolioData);
   const hasFaq = isJsonObject(landingPage.faqData);
+  const hasQuote = isJsonObject(landingPage.quoteData);
 
   // JSON-LD Person structured data
   const jsonLd = {
@@ -121,7 +125,7 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
       <LandingHeader consultant={consultant} />
 
       <main>
-        {/* 1. Hero */}
+        {/* 1. Cover */}
         <CoverSection
           consultant={consultant}
           coverData={
@@ -131,7 +135,12 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
           }
         />
 
-        {/* 2. Valori */}
+        {/* 2. Profile */}
+        <AnimateOnScroll variant="fade-up">
+          <ProfileSection consultant={consultant} />
+        </AnimateOnScroll>
+
+        {/* 3. Values */}
         {hasValues && (
           <AnimateOnScroll variant="fade-up">
             <ValuesSection
@@ -140,7 +149,14 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
           </AnimateOnScroll>
         )}
 
-        {/* 3. Chi Sono */}
+        {/* 4. Map */}
+        {hasMap && (
+          <MapSection
+            mapData={landingPage.mapData as unknown as Parameters<typeof MapSection>[0]["mapData"]}
+          />
+        )}
+
+        {/* 5. Summary */}
         {hasSummary && (
           <SummarySection
             summaryData={landingPage.summaryData as unknown as Parameters<typeof SummarySection>[0]["summaryData"]}
@@ -148,7 +164,7 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
           />
         )}
 
-        {/* 3. Servizi */}
+        {/* 6. Skills */}
         {hasSkills && (
           <AnimateOnScroll variant="fade-up">
             <SkillsSection
@@ -157,7 +173,7 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
           </AnimateOnScroll>
         )}
 
-        {/* Process */}
+        {/* 7. Process */}
         {hasProcess && (
           <AnimateOnScroll variant="fade-up">
             <ProcessSection
@@ -166,7 +182,7 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
           </AnimateOnScroll>
         )}
 
-        {/* Method */}
+        {/* 8. Method */}
         {hasMethod && (
           <AnimateOnScroll variant="fade-up">
             <MethodSection
@@ -175,7 +191,7 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
           </AnimateOnScroll>
         )}
 
-        {/* Strengths */}
+        {/* 9. Strengths */}
         {hasStrengths && (
           <AnimateOnScroll variant="fade-up">
             <StrengthsSection
@@ -184,7 +200,25 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
           </AnimateOnScroll>
         )}
 
-        {/* Interessi */}
+        {/* 10. Experiences */}
+        {hasExperiences && (
+          <AnimateOnScroll variant="fade-up">
+            <ExperiencesSection
+              experiencesData={landingPage.experiencesData as unknown as Parameters<typeof ExperiencesSection>[0]["experiencesData"]}
+            />
+          </AnimateOnScroll>
+        )}
+
+        {/* 11. Education */}
+        {hasEducation && (
+          <AnimateOnScroll variant="fade-up">
+            <EducationSection
+              educationData={landingPage.educationData as unknown as Parameters<typeof EducationSection>[0]["educationData"]}
+            />
+          </AnimateOnScroll>
+        )}
+
+        {/* 12. Interests */}
         {hasInterests && (
           <AnimateOnScroll variant="fade-up">
             <InterestsSection
@@ -193,7 +227,7 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
           </AnimateOnScroll>
         )}
 
-        {/* 5. Banner */}
+        {/* 13. Banner */}
         {hasBanner && (
           <AnimateOnScroll variant="fade-up">
             <BannerSection
@@ -202,25 +236,16 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
           </AnimateOnScroll>
         )}
 
-        {/* 6. Portfolio (merge with focusOn) */}
-        {(hasPortfolio || hasFocusOn) && (
+        {/* 14. Focus On */}
+        {hasFocusOn && (
           <AnimateOnScroll variant="fade-up">
-            <PortfolioSection
-              portfolioData={
-                hasPortfolio
-                  ? (landingPage.portfolioData as unknown as Parameters<typeof PortfolioSection>[0]["portfolioData"])
-                  : undefined
-              }
-              focusOnData={
-                hasFocusOn
-                  ? (landingPage.focusOnData as unknown as NonNullable<Parameters<typeof PortfolioSection>[0]["focusOnData"]>)
-                  : undefined
-              }
+            <FocusOnSection
+              focusOnData={landingPage.focusOnData as unknown as Parameters<typeof FocusOnSection>[0]["focusOnData"]}
             />
           </AnimateOnScroll>
         )}
 
-        {/* 7. Testimonial */}
+        {/* 15. Testimonials */}
         {hasTestimonials && (
           <AnimateOnScroll variant="fade-up">
             <TestimonialsSection
@@ -229,7 +254,7 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
           </AnimateOnScroll>
         )}
 
-        {/* 8. Video */}
+        {/* 16. Video */}
         {hasVideo && (
           <AnimateOnScroll variant="fade-up">
             <VideoSection
@@ -238,25 +263,16 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
           </AnimateOnScroll>
         )}
 
-        {/* 9. Percorso (merge experiences + education) */}
-        {(hasExperiences || hasEducation) && (
+        {/* 17. Portfolio */}
+        {hasPortfolio && (
           <AnimateOnScroll variant="fade-up">
-            <ExperiencesSection
-              experiencesData={
-                hasExperiences
-                  ? (landingPage.experiencesData as unknown as Parameters<typeof ExperiencesSection>[0]["experiencesData"])
-                  : undefined
-              }
-              educationData={
-                hasEducation
-                  ? (landingPage.educationData as unknown as NonNullable<Parameters<typeof ExperiencesSection>[0]["educationData"]>)
-                  : undefined
-              }
+            <PortfolioSection
+              portfolioData={landingPage.portfolioData as unknown as Parameters<typeof PortfolioSection>[0]["portfolioData"]}
             />
           </AnimateOnScroll>
         )}
 
-        {/* FAQ */}
+        {/* 18. FAQ */}
         {hasFaq && (
           <AnimateOnScroll variant="fade-up">
             <FaqSection
@@ -265,14 +281,14 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
           </AnimateOnScroll>
         )}
 
-        {/* Citazione */}
+        {/* 19. Quote */}
         {hasQuote && (
           <QuoteSection
             quoteData={landingPage.quoteData as unknown as Parameters<typeof QuoteSection>[0]["quoteData"]}
           />
         )}
 
-        {/* 11. Contatti */}
+        {/* Contact (always present) */}
         <AnimateOnScroll variant="fade-up">
           <ContactForm
             landingPageId={landingPage.id}
@@ -291,7 +307,7 @@ export function LandingLayout({ consultant, landingPage }: LandingLayoutProps) {
         </AnimateOnScroll>
       </main>
 
-      {/* 12. Footer */}
+      {/* Footer (always present) */}
       <LandingFooter
         consultantName={consultantFullName}
         consultantRole={consultant.role}

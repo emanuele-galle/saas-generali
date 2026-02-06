@@ -11,12 +11,14 @@ import { Plus, Trash2 } from "lucide-react";
 interface ValuesData {
   title?: string;
   subtitle?: string;
+  videoUrl?: string;
   items: { title: string; description: string; icon?: string }[];
 }
 
 interface ValuesFormValues {
   title: string;
   subtitle: string;
+  videoUrl: string;
   items: Array<{ title: string; description: string; icon: string }>;
 }
 
@@ -29,6 +31,7 @@ function toFormValues(data: ValuesData): ValuesFormValues {
   return {
     title: data.title ?? "",
     subtitle: data.subtitle ?? "",
+    videoUrl: data.videoUrl ?? "",
     items: (data.items ?? []).map((item) => ({
       title: item.title,
       description: item.description,
@@ -41,6 +44,7 @@ function toValuesData(values: ValuesFormValues): ValuesData {
   return {
     title: values.title || undefined,
     subtitle: values.subtitle || undefined,
+    videoUrl: values.videoUrl || undefined,
     items: values.items
       .filter((item) => item.title.trim() !== "")
       .map((item) => ({
@@ -133,6 +137,18 @@ export function ValuesEditor({ data, onChange }: ValuesEditorProps) {
         <Plus className="h-4 w-4" />
         Aggiungi valore
       </Button>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label htmlFor="values-video">Video correlato (opzionale)</Label>
+        <Input
+          id="values-video"
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          {...register("videoUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
+      </div>
     </div>
   );
 }

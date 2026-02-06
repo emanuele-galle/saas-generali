@@ -23,6 +23,7 @@ interface Tool {
 interface MethodData {
   title?: string;
   subtitle?: string;
+  videoUrl?: string;
   phases: Phase[];
   tools?: Tool[];
 }
@@ -30,6 +31,7 @@ interface MethodData {
 interface MethodFormValues {
   title: string;
   subtitle: string;
+  videoUrl: string;
   phases: Array<{ title: string; subtitle: string; description: string; bullets: string }>;
   tools: Array<{ name: string; description: string }>;
 }
@@ -43,6 +45,7 @@ function toFormValues(data: MethodData): MethodFormValues {
   return {
     title: data.title ?? "",
     subtitle: data.subtitle ?? "",
+    videoUrl: data.videoUrl ?? "",
     phases: (data.phases ?? []).map((p) => ({
       title: p.title,
       subtitle: p.subtitle ?? "",
@@ -60,6 +63,7 @@ function toMethodData(values: MethodFormValues): MethodData {
   return {
     title: values.title || undefined,
     subtitle: values.subtitle || undefined,
+    videoUrl: values.videoUrl || undefined,
     phases: values.phases
       .filter((p) => p.title.trim() !== "")
       .map((p) => ({
@@ -211,6 +215,18 @@ export function MethodEditor({ data, onChange }: MethodEditorProps) {
           <Plus className="h-4 w-4" />
           Aggiungi strumento
         </Button>
+      </div>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label htmlFor="method-video">Video correlato (opzionale)</Label>
+        <Input
+          id="method-video"
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          {...register("videoUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
       </div>
     </div>
   );

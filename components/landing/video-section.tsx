@@ -5,11 +5,10 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { BlurText } from "@/components/ui/blur-text";
 
 const CustomVideoPlayer = dynamic(
   () => import("@/components/landing/video-player").then((m) => m.CustomVideoPlayer),
-  { loading: () => <div className="aspect-video w-full animate-pulse rounded-2xl bg-white/5" /> },
+  { loading: () => <div className="aspect-video w-full animate-pulse rounded-2xl bg-[#F0EDEA]" /> },
 );
 
 interface VideoItem {
@@ -28,8 +27,6 @@ interface VideoData {
 interface VideoSectionProps {
   videoData: VideoData;
 }
-
-/* ── Helpers ──────────────────────────────────────────────── */
 
 function getYouTubeId(url: string): string | null {
   const m = url.match(
@@ -54,52 +51,51 @@ function isValidVideoUrl(url: string): boolean {
   return !!getVideoSource(url);
 }
 
-/* ── Normalize data (backward compat) ────────────────────── */
-
 function normalizeVideos(data: VideoData): VideoItem[] {
   const items: VideoItem[] = [];
-
   if (data.videos && data.videos.length > 0) {
     items.push(...data.videos.filter((v) => v.url && isValidVideoUrl(v.url)));
   }
-
   if (items.length === 0 && data.videoUrl && isValidVideoUrl(data.videoUrl)) {
     items.push({ id: "legacy", url: data.videoUrl, title: data.title });
   }
-
   return items;
 }
 
-/* ── Section Header ──────────────────────────────────────── */
+/* -- Section Header -- */
 
-function VideoSectionHeader({ videoData }: { videoData: VideoData }) {
+function SectionHeader({ title, description }: { title?: string; description?: string }) {
   return (
-    <>
-      {videoData.title && (
-        <p
-          className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.3em]"
-          style={{ color: "var(--generali-gold, #D4A537)" }}
-        >
-          Video
-        </p>
-      )}
-      {videoData.title && (
-        <h2 className="mb-4 text-center text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-          <BlurText text={videoData.title} delay={60} />
+    <div className="mb-16 text-center">
+      <p
+        className="mb-4 text-sm font-medium uppercase tracking-[0.2em]"
+        style={{ color: "var(--generali-gold, #D4A537)" }}
+      >
+        Video
+      </p>
+      {title && (
+        <h2 className="font-display text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl">
+          {title}
         </h2>
       )}
-      {videoData.description && (
-        <p className="mx-auto mb-14 max-w-2xl text-center text-white/50">
-          {videoData.description}
+      <div
+        className="mx-auto mt-6 h-0.5 w-16"
+        style={{
+          background: "linear-gradient(90deg, var(--theme-color, #C21D17), var(--generali-gold, #D4A537))",
+        }}
+      />
+      {description && (
+        <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+          {description}
         </p>
       )}
-    </>
+    </div>
   );
 }
 
-/* ── Video Grid Card (16:9 thumbnail + title) ────────────── */
+/* -- Thumbnail Card -- */
 
-function VideoGridCard({
+function VideoCard({
   video,
   index,
   onClick,
@@ -114,47 +110,63 @@ function VideoGridCard({
 
   return (
     <motion.button
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: index * 0.08 }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.4, 0, 0.2, 1] }}
       onClick={onClick}
       className="group w-full text-left"
     >
-      <div className="relative overflow-hidden rounded-2xl border border-white/10 transition-all group-hover:border-white/20 group-hover:shadow-lg group-hover:shadow-black/40">
-        <div
-          className="relative w-full overflow-hidden"
-          style={{ aspectRatio: "16/9" }}
-        >
+      <div
+        className="relative overflow-hidden rounded-2xl"
+        style={{
+          boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)",
+          transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "translateY(-4px)";
+          e.currentTarget.style.boxShadow = "0 16px 48px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.08)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "translateY(0)";
+          e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)";
+        }}
+      >
+        <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16/9" }}>
           {thumbnail ? (
             <Image
               src={thumbnail}
               alt={video.title || "Video"}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-110"
             />
           ) : (
             <div
               className="absolute inset-0"
               style={{
-                background:
-                  "linear-gradient(135deg, var(--theme-color, #c21d17) 0%, #1a1a1a 60%, #0a0a0a 100%)",
+                background: "linear-gradient(135deg, rgba(194,29,23,0.15) 0%, #0A0A0A 100%)",
               }}
             />
           )}
 
-          <div className="absolute inset-0 bg-black/30 transition-colors group-hover:bg-black/20" />
+          {/* Dark overlay with smooth fade */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent transition-opacity duration-500 group-hover:from-black/40 group-hover:via-black/10" />
 
+          {/* Premium play button */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div
-              className={`flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-all group-hover:scale-110 group-hover:bg-white/30 ${
-                featured ? "h-16 w-16" : "h-12 w-12"
+              className={`flex items-center justify-center rounded-full transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-110 ${
+                featured ? "h-20 w-20" : "h-14 w-14"
               }`}
+              style={{
+                background: "var(--theme-color, #C21D17)",
+                boxShadow: "0 8px 32px rgba(194,29,23,0.4), 0 0 0 4px rgba(255,255,255,0.15)",
+              }}
             >
               <Play
                 className={`fill-white text-white ml-0.5 ${
-                  featured ? "h-7 w-7" : "h-5 w-5"
+                  featured ? "h-8 w-8" : "h-5 w-5"
                 }`}
               />
             </div>
@@ -164,9 +176,18 @@ function VideoGridCard({
 
       {video.title && (
         <p
-          className={`mt-3 font-medium text-white/80 transition-colors group-hover:text-white ${
-            featured ? "text-base" : "text-sm"
+          className={`mt-4 font-semibold text-foreground transition-colors duration-300 ${
+            featured ? "text-lg" : "text-sm"
           }`}
+          style={{
+            transition: "color 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "var(--theme-color, #C21D17)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "";
+          }}
         >
           {video.title}
         </p>
@@ -175,7 +196,7 @@ function VideoGridCard({
   );
 }
 
-/* ── Modal Player (16:9, with CustomVideoPlayer) ─────────── */
+/* -- Modal Player -- */
 
 function VideoModal({
   videos,
@@ -201,14 +222,8 @@ function VideoModal({
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
-      if (e.key === "ArrowUp" && hasMultiple) {
-        e.preventDefault();
-        goPrev();
-      }
-      if (e.key === "ArrowDown" && hasMultiple) {
-        e.preventDefault();
-        goNext();
-      }
+      if (e.key === "ArrowUp" && hasMultiple) { e.preventDefault(); goPrev(); }
+      if (e.key === "ArrowDown" && hasMultiple) { e.preventDefault(); goNext(); }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -221,13 +236,31 @@ function VideoModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{
+        background: "rgba(0,0,0,0.92)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+      }}
       onClick={onClose}
     >
+      {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+        className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full text-white transition-all duration-300"
+        style={{
+          background: "rgba(255,255,255,0.08)",
+          border: "1px solid rgba(255,255,255,0.1)",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "rgba(255,255,255,0.15)";
+          e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+          e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+        }}
         aria-label="Chiudi"
       >
         <X className="h-5 w-5" />
@@ -236,21 +269,35 @@ function VideoModal({
       {hasMultiple && (
         <>
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              goPrev();
+            onClick={(e) => { e.stopPropagation(); goPrev(); }}
+            className="absolute left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-white transition-all duration-300 sm:left-4"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.1)",
             }}
-            className="absolute left-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 sm:left-4"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.15)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+            }}
             aria-label="Video precedente"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              goNext();
+            onClick={(e) => { e.stopPropagation(); goNext(); }}
+            className="absolute right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-white transition-all duration-300 sm:right-4"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.1)",
             }}
-            className="absolute right-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 sm:right-4"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.15)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+            }}
             aria-label="Video successivo"
           >
             <ChevronRight className="h-5 w-5" />
@@ -258,28 +305,27 @@ function VideoModal({
         </>
       )}
 
-      {/* Video player — 16:9 aspect */}
       <div
         className="relative mx-auto w-full max-w-4xl px-4"
         style={{ maxHeight: "85vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <CustomVideoPlayer
-          key={`${current.id}-${currentIndex}`}
-          videoUrl={current.url}
-          aspectRatio="16:9"
-          autoPlay
-        />
+        <div className="overflow-hidden rounded-2xl" style={{ boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}>
+          <CustomVideoPlayer
+            key={`${current.id}-${currentIndex}`}
+            videoUrl={current.url}
+            aspectRatio="16:9"
+            autoPlay
+          />
+        </div>
       </div>
 
       <div className="absolute bottom-6 left-0 right-0 text-center">
         {current.title && (
-          <p className="mb-1 text-sm font-medium text-white">
-            {current.title}
-          </p>
+          <p className="mb-1 text-sm font-medium text-white/90">{current.title}</p>
         )}
         {hasMultiple && (
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-white/40">
             {currentIndex + 1} / {videos.length}
           </p>
         )}
@@ -288,7 +334,7 @@ function VideoModal({
   );
 }
 
-/* ── Main Section ─────────────────────────────────────────── */
+/* -- Main Section -- */
 
 export function VideoSection({ videoData }: VideoSectionProps) {
   const videos = normalizeVideos(videoData);
@@ -296,16 +342,16 @@ export function VideoSection({ videoData }: VideoSectionProps) {
 
   if (videos.length === 0) return null;
 
-  const sectionClass = "noise-overlay relative overflow-hidden py-24 sm:py-32";
-
-  // Single video: inline 16:9 player
+  // Single video: inline player
   if (videos.length === 1) {
     return (
-      <section className={sectionClass}>
-        <div className="absolute inset-0 bg-[#0a0a0a]" />
-        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <VideoSectionHeader videoData={videoData} />
-          <div className="shadow-2xl shadow-black/50 ring-1 ring-white/[0.08] rounded-2xl overflow-hidden">
+      <section className="section-premium py-24 lg:py-32">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader title={videoData.title} description={videoData.description} />
+          <div
+            className="overflow-hidden rounded-2xl"
+            style={{ boxShadow: "0 16px 48px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06)" }}
+          >
             <CustomVideoPlayer videoUrl={videos[0].url} aspectRatio="16:9" />
           </div>
         </div>
@@ -313,75 +359,49 @@ export function VideoSection({ videoData }: VideoSectionProps) {
     );
   }
 
-  // 2 videos: side by side grid
+  // 2 videos: side by side
   if (videos.length === 2) {
     return (
-      <section className={sectionClass}>
-        <div className="absolute inset-0 bg-[#0a0a0a]" />
-        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <VideoSectionHeader videoData={videoData} />
-          <div className="grid gap-6 sm:grid-cols-2">
+      <section className="section-premium py-24 lg:py-32">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader title={videoData.title} description={videoData.description} />
+          <div className="grid gap-8 sm:grid-cols-2">
             {videos.map((video, i) => (
-              <VideoGridCard
-                key={video.id}
-                video={video}
-                index={i}
-                onClick={() => setActiveIndex(i)}
-              />
+              <VideoCard key={video.id} video={video} index={i} onClick={() => setActiveIndex(i)} />
             ))}
           </div>
         </div>
-
         <AnimatePresence>
           {activeIndex !== null && (
-            <VideoModal
-              videos={videos}
-              initialIndex={activeIndex}
-              onClose={() => setActiveIndex(null)}
-            />
+            <VideoModal videos={videos} initialIndex={activeIndex} onClose={() => setActiveIndex(null)} />
           )}
         </AnimatePresence>
       </section>
     );
   }
 
-  // 3+ videos: featured first + grid for the rest
+  // 3+ videos: featured + grid
   const [featured, ...rest] = videos;
 
   return (
-    <section className={sectionClass}>
-      <div className="absolute inset-0 bg-[#0a0a0a]" />
-      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <VideoSectionHeader videoData={videoData} />
+    <section className="section-premium py-24 lg:py-32">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <SectionHeader title={videoData.title} description={videoData.description} />
 
-        <div className="mb-6">
-          <VideoGridCard
-            video={featured}
-            index={0}
-            onClick={() => setActiveIndex(0)}
-            featured
-          />
+        <div className="mb-8">
+          <VideoCard video={featured} index={0} onClick={() => setActiveIndex(0)} featured />
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
           {rest.map((video, i) => (
-            <VideoGridCard
-              key={video.id}
-              video={video}
-              index={i + 1}
-              onClick={() => setActiveIndex(i + 1)}
-            />
+            <VideoCard key={video.id} video={video} index={i + 1} onClick={() => setActiveIndex(i + 1)} />
           ))}
         </div>
       </div>
 
       <AnimatePresence>
         {activeIndex !== null && (
-          <VideoModal
-            videos={videos}
-            initialIndex={activeIndex}
-            onClose={() => setActiveIndex(null)}
-          />
+          <VideoModal videos={videos} initialIndex={activeIndex} onClose={() => setActiveIndex(null)} />
         )}
       </AnimatePresence>
     </section>

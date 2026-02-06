@@ -5,6 +5,7 @@ import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
 import { LANDING_SECTIONS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { ProfileEditor } from "@/components/editor/profile-editor";
 import { CoverEditor } from "@/components/editor/cover-editor";
 import { SummaryEditor } from "@/components/editor/summary-editor";
 import { MapEditor } from "@/components/editor/map-editor";
@@ -185,24 +186,19 @@ function getSectionEditor(
           onChange={onChange}
         />
       );
+    case "profile":
+      return consultantId ? (
+        <ProfileEditor consultantId={consultantId} />
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          ID consulente non disponibile.
+        </p>
+      );
     default:
       return (
-        <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">
-            Questa sezione viene generata automaticamente dal profilo del consulente (nome, ruolo, contatti, certificazioni).
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Per modificare questi dati, accedi alla scheda del consulente.
-          </p>
-          {consultantId && (
-            <a
-              href={`/consultants/${consultantId}`}
-              className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90"
-            >
-              Modifica profilo consulente
-            </a>
-          )}
-        </div>
+        <p className="text-sm text-muted-foreground">
+          Editor non disponibile per questa sezione.
+        </p>
       );
   }
 }

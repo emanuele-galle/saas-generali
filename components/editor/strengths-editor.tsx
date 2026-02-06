@@ -11,12 +11,14 @@ import { Plus, Trash2 } from "lucide-react";
 interface StrengthsData {
   title?: string;
   subtitle?: string;
+  videoUrl?: string;
   items: { title: string; description: string; icon?: string }[];
 }
 
 interface StrengthsFormValues {
   title: string;
   subtitle: string;
+  videoUrl: string;
   items: Array<{ title: string; description: string; icon: string }>;
 }
 
@@ -29,6 +31,7 @@ function toFormValues(data: StrengthsData): StrengthsFormValues {
   return {
     title: data.title ?? "",
     subtitle: data.subtitle ?? "",
+    videoUrl: data.videoUrl ?? "",
     items: (data.items ?? []).map((item) => ({
       title: item.title,
       description: item.description,
@@ -41,6 +44,7 @@ function toStrengthsData(values: StrengthsFormValues): StrengthsData {
   return {
     title: values.title || undefined,
     subtitle: values.subtitle || undefined,
+    videoUrl: values.videoUrl || undefined,
     items: values.items
       .filter((item) => item.title.trim() !== "")
       .map((item) => ({
@@ -133,6 +137,18 @@ export function StrengthsEditor({ data, onChange }: StrengthsEditorProps) {
         <Plus className="h-4 w-4" />
         Aggiungi punto di forza
       </Button>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label htmlFor="strengths-video">Video correlato (opzionale)</Label>
+        <Input
+          id="strengths-video"
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          {...register("videoUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
+      </div>
     </div>
   );
 }

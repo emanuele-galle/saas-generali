@@ -4,6 +4,8 @@ import { db } from "@/server/db";
 import { trackView } from "@/lib/track-view";
 import { LandingLayout } from "@/components/landing/landing-layout";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ preview?: string }>;

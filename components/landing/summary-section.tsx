@@ -1,85 +1,149 @@
+"use client";
+
 import Image from "next/image";
-import { CheckCircle2, Quote } from "lucide-react";
+import { Check } from "lucide-react";
+import { AnimateOnScroll } from "@/components/landing/animate-on-scroll";
+import { InlineVideo } from "@/components/landing/inline-video";
 
 interface SummaryData {
   bio?: string;
   highlights?: string[];
   quote?: string;
   imageUrl?: string;
+  videoUrl?: string;
 }
 
 interface SummarySectionProps {
   summaryData: SummaryData;
+  consultant?: {
+    firstName: string;
+    lastName: string;
+    title?: string | null;
+    profileImage?: string | null;
+  };
 }
 
-export function SummarySection({ summaryData }: SummarySectionProps) {
+export function SummarySection({ summaryData, consultant }: SummarySectionProps) {
   const { bio, highlights, quote, imageUrl } = summaryData;
 
   if (!bio && (!highlights || highlights.length === 0) && !quote) {
     return null;
   }
 
-  return (
-    <section className="py-20 sm:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <p className="mb-4 text-center text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
-          Chi sono
-        </p>
-        <h2 className="mb-16 text-center text-3xl font-bold text-foreground sm:text-4xl">
-          La mia storia
-        </h2>
+  const profilePhoto = imageUrl || consultant?.profileImage;
+  const fullName = consultant
+    ? [consultant.title, consultant.firstName, consultant.lastName].filter(Boolean).join(" ")
+    : null;
 
-        <div className={`mx-auto ${imageUrl ? "max-w-6xl" : "max-w-3xl"}`}>
-          <div className={imageUrl ? "flex flex-col gap-12 md:flex-row md:items-start" : ""}>
-            {imageUrl && (
-              <div className="shrink-0 md:w-2/5">
-                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl shadow-xl">
+  return (
+    <section id="chi-sono" className="section-premium py-24 lg:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div
+          className={`flex flex-col gap-14 ${
+            profilePhoto ? "lg:flex-row lg:items-start lg:gap-20" : "mx-auto max-w-3xl"
+          }`}
+        >
+          {/* Left: Photo */}
+          {profilePhoto && (
+            <AnimateOnScroll variant="fade-left">
+              <div className="shrink-0 lg:w-5/12">
+                <div
+                  className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl"
+                  style={{
+                    boxShadow:
+                      "0 20px 60px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.08)",
+                    border: "1px solid rgba(255,255,255,0.6)",
+                  }}
+                >
                   <Image
-                    src={imageUrl}
-                    alt="Chi sono"
+                    src={profilePhoto}
+                    alt={fullName || "Chi sono"}
                     fill
                     className="object-cover"
+                    unoptimized
                   />
                 </div>
               </div>
-            )}
+            </AnimateOnScroll>
+          )}
 
-            <div className="flex-1">
+          {/* Right: Content */}
+          <AnimateOnScroll variant="fade-right">
+            <div className={profilePhoto ? "lg:w-7/12" : "w-full"}>
+              <p
+                className="mb-3 text-xs font-semibold uppercase tracking-[0.2em]"
+                style={{ color: "var(--generali-gold, #D4A537)" }}
+              >
+                Chi Sono
+              </p>
+
+              {fullName && (
+                <h2 className="font-display mb-8 text-[clamp(2rem,4vw,3.25rem)] leading-tight tracking-[-0.01em] text-[#1A1A1A]">
+                  {fullName}
+                </h2>
+              )}
+
               {bio && (
-                <div className="mb-8 space-y-4">
-                  {bio.split("\n").map((paragraph, index) => (
-                    <p
-                      key={index}
-                      className="text-base leading-relaxed text-muted-foreground"
-                    >
-                      {paragraph}
-                    </p>
-                  ))}
+                <div className="mb-10 space-y-5">
+                  {bio
+                    .split("\n")
+                    .filter(Boolean)
+                    .map((paragraph, index) => (
+                      <p
+                        key={index}
+                        className="text-lg leading-[1.8] text-[#4B5563]"
+                      >
+                        {paragraph}
+                      </p>
+                    ))}
                 </div>
               )}
 
               {quote && (
-                <div className="my-8 rounded-xl border-l-4 border-[var(--theme-color,#C21D17)] bg-muted/50 py-6 pl-6 pr-4">
-                  <Quote className="mb-2 h-6 w-6 text-[var(--theme-color,#C21D17)] opacity-40" />
-                  <p className="text-lg font-medium italic leading-relaxed text-foreground sm:text-xl">
+                <blockquote
+                  className="my-10 rounded-r-xl py-5 pl-7 pr-4"
+                  style={{
+                    borderLeft: "4px solid transparent",
+                    borderImage:
+                      "linear-gradient(to bottom, var(--theme-color, #C21D17), var(--generali-gold, #D4A537)) 1",
+                    background:
+                      "linear-gradient(135deg, rgba(194,29,23,0.03) 0%, rgba(212,165,55,0.03) 100%)",
+                  }}
+                >
+                  <p className="text-xl font-medium italic leading-relaxed text-[#1A1A1A]">
                     &ldquo;{quote}&rdquo;
                   </p>
-                </div>
+                </blockquote>
               )}
 
               {highlights && highlights.length > 0 && (
-                <ul className="space-y-3">
+                <ul className="mt-8 space-y-4">
                   {highlights.map((item, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--theme-color,#C21D17)]" />
-                      <span className="text-sm text-foreground">{item}</span>
+                    <li key={index} className="flex items-start gap-4">
+                      <span
+                        className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
+                        style={{
+                          background:
+                            "linear-gradient(135deg, var(--generali-gold, #D4A537), #E8C060)",
+                          boxShadow: "0 2px 8px rgba(212,165,55,0.3)",
+                        }}
+                      >
+                        <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
+                      </span>
+                      <span className="text-base font-semibold leading-relaxed text-[#1A1A1A]">
+                        {item}
+                      </span>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
-          </div>
+          </AnimateOnScroll>
         </div>
+
+        {summaryData.videoUrl && (
+          <InlineVideo url={summaryData.videoUrl} />
+        )}
       </div>
     </section>
   );

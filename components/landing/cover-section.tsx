@@ -89,7 +89,7 @@ export function CoverSection({ consultant, coverData }: CoverSectionProps) {
             style={{ border: 0, pointerEvents: "none" }}
             title="Background video"
           />
-          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
         </div>
       ) : coverData.backgroundImage ? (
         <div className="absolute inset-0">
@@ -99,70 +99,105 @@ export function CoverSection({ consultant, coverData }: CoverSectionProps) {
             fill
             className="object-cover"
             priority
+            unoptimized
           />
-          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
         </div>
       ) : (
-        <div className="absolute inset-0 bg-[#0A0A0A]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0A0A0A] via-[#111] to-[#0A0A0A]" />
       )}
+
+      {/* Decorative Elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Corner accents */}
+        <div className="absolute top-8 left-8 w-16 h-16 border-l-2 border-t-2 opacity-20" style={{ borderColor: "var(--theme-color, #C21D17)" }} />
+        <div className="absolute bottom-8 right-8 w-16 h-16 border-r-2 border-b-2 opacity-20" style={{ borderColor: "var(--generali-gold, #D4A537)" }} />
+      </div>
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-6xl px-4 text-center sm:px-6 lg:px-8">
+        {/* Accent line */}
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.4, 0, 0.2, 1] }}
+          className="mx-auto mb-8 h-[2px] w-16 origin-center"
+          style={{ background: "var(--generali-gold, #D4A537)" }}
+        />
+
         <motion.p
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-          className="mb-6 text-[clamp(1rem,2vw,1.5rem)] font-light uppercase tracking-[0.2em] text-white/60"
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
+          className="mb-6 text-[clamp(0.875rem,1.5vw,1.25rem)] font-medium uppercase tracking-[0.25em] text-white/50"
         >
           {subheadline}
         </motion.p>
 
         <motion.h1
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
-          className="text-[clamp(3.5rem,8vw,8rem)] font-black uppercase leading-[0.95] tracking-[-0.03em] text-white"
+          transition={{ duration: 0.6, delay: 0.4, ease: [0.4, 0, 0.2, 1] }}
+          className="font-display text-[clamp(3rem,7vw,7rem)] leading-[0.95] tracking-[-0.02em] text-white"
         >
           {headline}
         </motion.h1>
 
+        {coverData.mainText && (
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.55, ease: [0.4, 0, 0.2, 1] }}
+            className="mx-auto mt-6 max-w-2xl text-[clamp(1rem,1.5vw,1.25rem)] leading-relaxed text-white/50"
+          >
+            {coverData.mainText}
+          </motion.p>
+        )}
+
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
-          className="mt-10"
+          transition={{ duration: 0.6, delay: 0.7, ease: [0.4, 0, 0.2, 1] }}
+          className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
         >
           <a
             href={ctaHref}
-            className="inline-block rounded-full bg-[#C21D17] px-8 py-4 text-lg font-bold text-white transition-colors duration-200 hover:bg-[#E8312B]"
+            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-8 py-4 text-base font-semibold text-white transition-all duration-300 hover:shadow-[0_0_30px_rgba(194,29,23,0.3)]"
+            style={{ backgroundColor: "var(--theme-color, #C21D17)" }}
           >
-            {ctaText}
+            <span className="relative z-10">{ctaText}</span>
+            <svg className="relative z-10 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
           </a>
+          {coverData.ctaSecondaryText && coverData.ctaSecondaryLink && (
+            <a
+              href={coverData.ctaSecondaryLink}
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-8 py-4 text-base font-medium text-white/70 transition-all duration-300 hover:border-white/40 hover:text-white"
+            >
+              {coverData.ctaSecondaryText}
+            </a>
+          )}
         </motion.div>
       </div>
 
-      {/* Scroll indicator arrow */}
+      {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.6 }}
+        transition={{ delay: 1.4, duration: 0.6 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
       >
-        <a href="#chi-sono" className="block text-white/40 hover:text-white/60 transition-colors" aria-label="Scorri">
-          <motion.svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <a href="#chi-sono" className="flex flex-col items-center gap-2 text-white/30 hover:text-white/50 transition-colors" aria-label="Scorri">
+          <span className="text-[10px] uppercase tracking-[0.2em]">Scroll</span>
+          <motion.div
             animate={{ y: [0, 6, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+            transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
           >
-            <path d="M12 5v14M5 12l7 7 7-7" />
-          </motion.svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
+          </motion.div>
         </a>
       </motion.div>
     </section>

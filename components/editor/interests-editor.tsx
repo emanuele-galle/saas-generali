@@ -44,9 +44,11 @@ interface Interest {
 
 interface InterestsData {
   interests: Interest[];
+  videoUrl?: string;
 }
 
 interface InterestsFormValues {
+  videoUrl: string;
   interests: Array<{ name: string; icon: string }>;
 }
 
@@ -57,6 +59,7 @@ interface InterestsEditorProps {
 
 function toFormValues(data: InterestsData): InterestsFormValues {
   return {
+    videoUrl: data.videoUrl ?? "",
     interests: (data.interests ?? []).map((i) => ({
       name: i.name,
       icon: i.icon ?? "heart",
@@ -66,6 +69,7 @@ function toFormValues(data: InterestsData): InterestsFormValues {
 
 function toInterestsData(values: InterestsFormValues): InterestsData {
   return {
+    videoUrl: values.videoUrl || undefined,
     interests: values.interests
       .filter((i) => i.name.trim() !== "")
       .map((i) => ({
@@ -151,6 +155,18 @@ export function InterestsEditor({ data, onChange }: InterestsEditorProps) {
         <Plus className="h-4 w-4" />
         Aggiungi interesse
       </Button>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label htmlFor="interests-video">Video correlato (opzionale)</Label>
+        <Input
+          id="interests-video"
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          {...register("videoUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
+      </div>
     </div>
   );
 }

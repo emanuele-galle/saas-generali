@@ -19,6 +19,7 @@ interface Testimonial {
 
 interface TestimonialsData {
   testimonials?: Testimonial[];
+  videoUrl?: string;
 }
 
 interface TestimonialsEditorProps {
@@ -30,14 +31,15 @@ export function TestimonialsEditor({ data, onChange }: TestimonialsEditorProps) 
   const [testimonials, setTestimonials] = useState<Testimonial[]>(
     data.testimonials ?? []
   );
+  const [videoUrl, setVideoUrl] = useState(data.videoUrl ?? "");
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const fileInputRefs = useRef<Map<number, HTMLInputElement>>(new Map());
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
   useEffect(() => {
-    onChangeRef.current({ testimonials });
-  }, [testimonials]);
+    onChangeRef.current({ testimonials, videoUrl: videoUrl || undefined });
+  }, [testimonials, videoUrl]);
 
   function addTestimonial() {
     setTestimonials((prev) => [
@@ -220,6 +222,18 @@ export function TestimonialsEditor({ data, onChange }: TestimonialsEditorProps) 
         <Plus className="mr-1 h-4 w-4" />
         Aggiungi testimonianza
       </Button>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label className="text-xs">Video correlato (opzionale)</Label>
+        <Input
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          value={videoUrl}
+          onChange={(e) => setVideoUrl(e.target.value)}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
+      </div>
     </div>
   );
 }

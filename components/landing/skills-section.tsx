@@ -17,6 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { StaggerContainer, StaggerItem } from "@/components/landing/animate-on-scroll";
+import { InlineVideo } from "@/components/landing/inline-video";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Video, BookOpen, Mic, Globe, Megaphone, PenTool,
@@ -37,6 +38,7 @@ interface Skill {
 
 interface SkillsData {
   title?: string;
+  videoUrl?: string;
   skills: Skill[];
 }
 
@@ -48,7 +50,23 @@ function SkillCard({ skill }: { skill: Skill }) {
   const IconComponent = skill.icon ? ICON_MAP[skill.icon] : null;
 
   const card = (
-    <div className="card-bold group h-full overflow-hidden rounded-2xl">
+    <div
+      className="card-bold group h-full overflow-hidden rounded-2xl transition-all duration-500"
+      style={{
+        transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+      }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget;
+        el.style.transform = "translateY(-4px)";
+        el.style.boxShadow =
+          "0 24px 60px rgba(0,0,0,0.1), 0 0 0 1px rgba(194,29,23,0.15)";
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget;
+        el.style.transform = "translateY(0)";
+        el.style.boxShadow = "";
+      }}
+    >
       {/* Image top */}
       {skill.imageUrl ? (
         <div className="relative aspect-[16/10] w-full overflow-hidden">
@@ -56,19 +74,47 @@ function SkillCard({ skill }: { skill: Skill }) {
             src={skill.imageUrl}
             alt={skill.name}
             fill
-            className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            style={{ transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)" }}
+            unoptimized
+          />
+          {/* Overlay gradient on hover */}
+          <div
+            className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            style={{
+              background:
+                "linear-gradient(to top, rgba(194,29,23,0.15) 0%, transparent 60%)",
+            }}
           />
         </div>
       ) : (
-        <div className="flex aspect-[16/10] items-center justify-center bg-gradient-to-br from-[#C21D17]/5 to-[#D4A537]/5">
+        <div
+          className="flex aspect-[16/10] items-center justify-center"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(194,29,23,0.04) 0%, rgba(212,165,55,0.06) 100%)",
+          }}
+        >
           {skill.imageIcon ? (
             <div className="relative h-16 w-16">
-              <Image src={skill.imageIcon} alt={skill.name} fill className="object-contain" />
+              <Image src={skill.imageIcon} alt={skill.name} fill className="object-contain" unoptimized />
             </div>
           ) : IconComponent ? (
-            <IconComponent className="h-16 w-16 text-[#C21D17]/60" />
+            <div
+              className="flex h-20 w-20 items-center justify-center rounded-2xl"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--theme-color, #C21D17), #E8312B)",
+                boxShadow: "0 8px 24px rgba(194,29,23,0.2)",
+              }}
+            >
+              <IconComponent className="h-10 w-10 text-white" />
+            </div>
           ) : (
-            <span className="text-5xl font-black text-[#C21D17]/20">
+            <span
+              className="text-5xl font-black"
+              style={{ color: "var(--theme-color, #C21D17)", opacity: 0.15 }}
+            >
               {skill.name.charAt(0).toUpperCase()}
             </span>
           )}
@@ -79,36 +125,58 @@ function SkillCard({ skill }: { skill: Skill }) {
       <div className="p-8">
         <h3 className="text-xl font-bold text-[#1A1A1A]">{skill.name}</h3>
         {skill.description && (
-          <p className="mt-2 text-base leading-relaxed text-[#6B7280]">
+          <p className="mt-3 text-base leading-[1.7] text-[#6B7280]">
             {skill.description}
           </p>
         )}
         {(skill.forWho || skill.whatWeDo || skill.benefit) && (
-          <div className="mt-4 space-y-3 border-t border-[#E5E7EB] pt-4">
+          <div className="mt-5 space-y-4 border-t border-[#E5E7EB]/60 pt-5">
             {skill.forWho && (
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#C21D17]">Per chi</span>
-                <p className="mt-0.5 text-sm text-[#6B7280]">{skill.forWho}</p>
+                <span
+                  className="text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: "var(--theme-color, #C21D17)" }}
+                >
+                  Per chi
+                </span>
+                <p className="mt-1 text-sm leading-relaxed text-[#6B7280]">{skill.forWho}</p>
               </div>
             )}
             {skill.whatWeDo && (
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#C21D17]">Cosa facciamo</span>
-                <p className="mt-0.5 text-sm text-[#6B7280]">{skill.whatWeDo}</p>
+                <span
+                  className="text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: "var(--theme-color, #C21D17)" }}
+                >
+                  Cosa facciamo
+                </span>
+                <p className="mt-1 text-sm leading-relaxed text-[#6B7280]">{skill.whatWeDo}</p>
               </div>
             )}
             {skill.benefit && (
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#D4A537]">Il beneficio</span>
-                <p className="mt-0.5 text-sm font-medium text-[#1A1A1A]">{skill.benefit}</p>
+                <span
+                  className="text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: "var(--generali-gold, #D4A537)" }}
+                >
+                  Il beneficio
+                </span>
+                <p className="mt-1 text-sm font-medium text-[#1A1A1A]">{skill.benefit}</p>
               </div>
             )}
           </div>
         )}
       </div>
 
-      {/* Bottom accent line on hover */}
-      <div className="h-1 w-0 bg-[#C21D17] transition-all duration-300 ease-out group-hover:w-full" />
+      {/* Bottom accent gradient line on hover */}
+      <div
+        className="h-1 w-0 transition-all duration-500 group-hover:w-full"
+        style={{
+          background:
+            "linear-gradient(to right, var(--theme-color, #C21D17), var(--generali-gold, #D4A537))",
+          transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
+      />
     </div>
   );
 
@@ -130,25 +198,29 @@ export function SkillsSection({ skillsData }: SkillsSectionProps) {
   const title = skillsData.title ?? "Competenze professionali";
 
   return (
-    <section id="servizi" className="bg-white py-24 md:py-32 lg:py-40">
+    <section id="servizi" className="section-premium py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <p
-          className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.15em]"
+          className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.2em]"
           style={{ color: "var(--generali-gold, #D4A537)" }}
         >
           Servizi
         </p>
-        <h2 className="mb-16 text-center text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-[-0.02em] text-[#1A1A1A]">
+        <h2 className="font-display mb-20 text-center text-[clamp(2rem,4vw,3.25rem)] tracking-[-0.01em] text-[#1A1A1A]">
           {title}
         </h2>
 
-        <StaggerContainer className="grid gap-8 md:grid-cols-2">
+        <StaggerContainer className="grid gap-10 md:grid-cols-2">
           {skills.map((skill, index) => (
             <StaggerItem key={index}>
               <SkillCard skill={skill} />
             </StaggerItem>
           ))}
         </StaggerContainer>
+
+        {skillsData.videoUrl && (
+          <InlineVideo url={skillsData.videoUrl} />
+        )}
       </div>
     </section>
   );

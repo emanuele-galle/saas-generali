@@ -2,19 +2,20 @@
 
 import { motion } from "framer-motion";
 
-/* Large decorative SVG quote mark */
-function QuoteMark({ className }: { className?: string }) {
+/* Refined decorative SVG quote mark */
+function QuoteMark({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
     <svg
       width="64"
       height="48"
-      viewBox="0 0 48 36"
+      viewBox="0 0 64 48"
       fill="none"
       className={className}
+      style={style}
       aria-hidden="true"
     >
       <path
-        d="M14.99 36c-2.5 0-4.77-.98-6.8-2.95C6.16 31.08 5.14 28.83 5.14 26.3c0-3.5 1.07-6.82 3.2-9.95 2.14-3.13 4.89-6.25 8.25-9.35l4.9 4.25c-2.13 1.88-3.82 3.63-5.05 5.25-1.24 1.62-1.85 3.48-1.85 5.6h5.4V36h-5zm23 0c-2.5 0-4.77-.98-6.8-2.95-2.04-1.97-3.05-4.22-3.05-6.75 0-3.5 1.07-6.82 3.2-9.95 2.14-3.13 4.89-6.25 8.25-9.35l4.9 4.25c-2.13 1.88-3.82 3.63-5.05 5.25-1.24 1.62-1.85 3.48-1.85 5.6h5.4V36h-5z"
+        d="M20 48c-3.33 0-6.36-1.31-9.07-3.93C8.24 41.44 6.86 38.44 6.86 35.07c0-4.67 1.42-9.09 4.27-13.27 2.85-4.17 6.52-8.33 11-12.47L28.66 15c-2.84 2.51-5.09 4.84-6.73 7-1.65 2.16-2.47 4.64-2.47 7.47h7.2V48H20zm30.67 0c-3.33 0-6.36-1.31-9.07-3.93-2.69-2.63-4.07-5.63-4.07-9 0-4.67 1.42-9.09 4.27-13.27 2.85-4.17 6.52-8.33 11-12.47L59.33 15c-2.84 2.51-5.09 4.84-6.73 7-1.65 2.16-2.47 4.64-2.47 7.47h7.2V48h-6.66z"
         fill="currentColor"
       />
     </svg>
@@ -38,52 +39,87 @@ export function QuoteSection({ quoteData }: QuoteSectionProps) {
 
   if (style === "left-accent") {
     return (
-      <section className="py-24">
+      <section className="section-light py-24 lg:py-32">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <div
-            className="border-l-4 py-4 pl-8"
-            style={{ borderColor: "var(--theme-color, #C21D17)" }}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+            className="relative py-6 pl-10"
+            style={{
+              borderLeft: "4px solid transparent",
+              borderImage: "linear-gradient(to bottom, var(--theme-color, #C21D17), var(--generali-gold, #D4A537)) 1",
+            }}
           >
-            <QuoteMark className="mb-4 h-8 w-10 text-[var(--theme-color,#C21D17)] opacity-30" />
-            <blockquote className="text-xl font-medium leading-relaxed text-foreground sm:text-2xl">
+            {/* Decorative quote mark */}
+            <QuoteMark
+              className="mb-6 h-10 w-12"
+              style={{
+                color: "var(--theme-color, #C21D17)",
+                opacity: 0.2,
+              }}
+            />
+            <blockquote className="font-display text-2xl font-medium leading-relaxed text-foreground sm:text-3xl lg:text-[2rem] lg:leading-[1.4]">
               {text}
             </blockquote>
             {author && (
-              <p className="mt-4 text-base text-muted-foreground">
-                &mdash; {author}
-              </p>
+              <div className="mt-6 flex items-center gap-3">
+                <div
+                  className="h-px w-10"
+                  style={{
+                    background: "linear-gradient(90deg, var(--generali-gold, #D4A537), transparent)",
+                  }}
+                />
+                <p className="text-base font-medium text-muted-foreground">
+                  {author}
+                </p>
+              </div>
             )}
-          </div>
+          </motion.div>
         </div>
       </section>
     );
   }
 
   return (
-    <section className="noise-overlay relative overflow-hidden py-24 sm:py-32">
-      {/* Layered gradient background */}
+    <section className="noise-overlay relative overflow-hidden py-24 lg:py-32">
+      {/* Sophisticated layered gradient background */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, #0c0c0c 0%, color-mix(in srgb, var(--theme-color, #c21d17) 4%, #080808) 50%, #0a0a0a 100%)",
+            "linear-gradient(180deg, #0a0a0a 0%, color-mix(in srgb, var(--theme-color, #C21D17) 3%, #060606) 40%, color-mix(in srgb, var(--generali-gold, #D4A537) 2%, #080808) 70%, #0a0a0a 100%)",
         }}
       />
-      {/* Top/bottom accent lines */}
+
+      {/* Top accent line */}
       <div
         className="absolute left-0 top-0 h-px w-full"
         style={{
           background:
-            "linear-gradient(90deg, transparent, var(--theme-color, #c21d17), var(--generali-gold, #D4A537), transparent)",
-          opacity: 0.12,
+            "linear-gradient(90deg, transparent 10%, var(--theme-color, #C21D17), var(--generali-gold, #D4A537), transparent 90%)",
+          opacity: 0.15,
         }}
       />
+      {/* Bottom accent line */}
       <div
         className="absolute bottom-0 left-0 h-px w-full"
         style={{
           background:
-            "linear-gradient(90deg, transparent, var(--generali-gold, #D4A537), var(--theme-color, #c21d17), transparent)",
-          opacity: 0.12,
+            "linear-gradient(90deg, transparent 10%, var(--generali-gold, #D4A537), var(--theme-color, #C21D17), transparent 90%)",
+          opacity: 0.15,
+        }}
+      />
+
+      {/* Subtle radial glow */}
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{
+          width: "600px",
+          height: "400px",
+          background: "radial-gradient(ellipse at center, color-mix(in srgb, var(--generali-gold, #D4A537) 4%, transparent) 0%, transparent 70%)",
+          pointerEvents: "none",
         }}
       />
 
@@ -92,26 +128,35 @@ export function QuoteSection({ quoteData }: QuoteSectionProps) {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
         >
-          <QuoteMark className="mx-auto mb-8 h-12 w-16 text-[var(--theme-color,#C21D17)] opacity-20" />
-          <blockquote className="text-2xl font-light leading-relaxed tracking-tight text-white sm:text-3xl lg:text-[2.5rem] lg:leading-[1.3]">
+          <QuoteMark
+            className="mx-auto mb-10 h-14 w-16"
+            style={{
+              color: "var(--generali-gold, #D4A537)",
+              opacity: 0.18,
+            }}
+          />
+          <blockquote className="font-display text-2xl font-light leading-relaxed tracking-tight text-white sm:text-3xl lg:text-[2.75rem] lg:leading-[1.3]">
             &ldquo;{text}&rdquo;
           </blockquote>
           {author && (
-            <div className="mt-10 flex items-center justify-center gap-4">
+            <div className="mt-12 flex items-center justify-center gap-5">
               <div
-                className="h-px w-8"
+                className="h-px w-12"
                 style={{
                   background:
                     "linear-gradient(90deg, transparent, var(--generali-gold, #D4A537))",
                 }}
               />
-              <p className="text-sm font-medium tracking-wide text-white/40">
+              <p
+                className="text-sm font-semibold uppercase tracking-[0.15em]"
+                style={{ color: "var(--generali-gold, #D4A537)", opacity: 0.6 }}
+              >
                 {author}
               </p>
               <div
-                className="h-px w-8"
+                className="h-px w-12"
                 style={{
                   background:
                     "linear-gradient(90deg, var(--generali-gold, #D4A537), transparent)",

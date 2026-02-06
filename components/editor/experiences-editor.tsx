@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 
+
 interface Experience {
   company: string;
   role: string;
@@ -17,9 +18,11 @@ interface Experience {
 
 interface ExperiencesData {
   experiences: Experience[];
+  videoUrl?: string;
 }
 
 interface ExperiencesFormValues {
+  videoUrl: string;
   experiences: Array<{
     company: string;
     role: string;
@@ -35,6 +38,7 @@ interface ExperiencesEditorProps {
 
 function toFormValues(data: ExperiencesData): ExperiencesFormValues {
   return {
+    videoUrl: data.videoUrl ?? "",
     experiences: (data.experiences ?? []).map((e) => ({
       company: e.company,
       role: e.role,
@@ -46,6 +50,7 @@ function toFormValues(data: ExperiencesData): ExperiencesFormValues {
 
 function toExperiencesData(values: ExperiencesFormValues): ExperiencesData {
   return {
+    videoUrl: values.videoUrl || undefined,
     experiences: values.experiences
       .filter((e) => e.company.trim() !== "" || e.role.trim() !== "")
       .map((e) => ({
@@ -162,6 +167,18 @@ export function ExperiencesEditor({ data, onChange }: ExperiencesEditorProps) {
         <Plus className="h-4 w-4" />
         Aggiungi esperienza
       </Button>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label htmlFor="experiences-video">Video correlato (opzionale)</Label>
+        <Input
+          id="experiences-video"
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          {...register("videoUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
+      </div>
     </div>
   );
 }

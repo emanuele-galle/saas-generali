@@ -132,6 +132,11 @@ export default function EditConsultantPage() {
       linkedinUrl: data.linkedinUrl,
       facebookUrl: data.facebookUrl,
       twitterUrl: data.twitterUrl,
+      instagramUrl: data.instagramUrl,
+      tiktokUrl: data.tiktokUrl,
+      youtubeUrl: data.youtubeUrl,
+      websiteUrl: data.websiteUrl,
+      themeColor: data.themeColor,
     });
   }
 
@@ -251,6 +256,11 @@ export default function EditConsultantPage() {
           linkedinUrl: consultant.linkedinUrl ?? undefined,
           facebookUrl: consultant.facebookUrl ?? undefined,
           twitterUrl: consultant.twitterUrl ?? undefined,
+          instagramUrl: consultant.instagramUrl ?? undefined,
+          tiktokUrl: consultant.tiktokUrl ?? undefined,
+          youtubeUrl: consultant.youtubeUrl ?? undefined,
+          websiteUrl: consultant.websiteUrl ?? undefined,
+          themeColor: consultant.themeColor ?? undefined,
         }}
         profileImageUrl={consultant.profileImage}
         onProfileImageChange={(url) => {

@@ -15,9 +15,11 @@ interface EducationItem {
 
 interface EducationData {
   items: EducationItem[];
+  videoUrl?: string;
 }
 
 interface EducationFormValues {
+  videoUrl: string;
   items: Array<{ institution: string; degree: string; year: string }>;
 }
 
@@ -28,6 +30,7 @@ interface EducationEditorProps {
 
 function toFormValues(data: EducationData): EducationFormValues {
   return {
+    videoUrl: data.videoUrl ?? "",
     items: (data.items ?? []).map((item) => ({
       institution: item.institution,
       degree: item.degree,
@@ -38,6 +41,7 @@ function toFormValues(data: EducationData): EducationFormValues {
 
 function toEducationData(values: EducationFormValues): EducationData {
   return {
+    videoUrl: values.videoUrl || undefined,
     items: values.items
       .filter(
         (item) =>
@@ -115,6 +119,18 @@ export function EducationEditor({ data, onChange }: EducationEditorProps) {
         <Plus className="h-4 w-4" />
         Aggiungi titolo di studio
       </Button>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label htmlFor="education-video">Video correlato (opzionale)</Label>
+        <Input
+          id="education-video"
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          {...register("videoUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
+      </div>
     </div>
   );
 }

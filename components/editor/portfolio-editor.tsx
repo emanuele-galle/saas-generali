@@ -35,6 +35,7 @@ interface PortfolioItem {
 
 interface PortfolioData {
   items: PortfolioItem[];
+  videoUrl?: string;
 }
 
 interface PortfolioEditorProps {
@@ -44,14 +45,15 @@ interface PortfolioEditorProps {
 
 export function PortfolioEditor({ data, onChange }: PortfolioEditorProps) {
   const [items, setItems] = useState<PortfolioItem[]>(data.items ?? []);
+  const [videoUrl, setVideoUrl] = useState(data.videoUrl ?? "");
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const fileInputRefs = useRef<Map<number, HTMLInputElement>>(new Map());
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
   useEffect(() => {
-    onChangeRef.current({ items });
-  }, [items]);
+    onChangeRef.current({ items, videoUrl: videoUrl || undefined });
+  }, [items, videoUrl]);
 
   function addItem() {
     setItems((prev) => [
@@ -222,6 +224,18 @@ export function PortfolioEditor({ data, onChange }: PortfolioEditorProps) {
         <Plus className="mr-1 h-4 w-4" />
         Aggiungi progetto
       </Button>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label>Video correlato (opzionale)</Label>
+        <Input
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          value={videoUrl}
+          onChange={(e) => setVideoUrl(e.target.value)}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { Check } from "lucide-react";
 import { StaggerContainer, StaggerItem } from "@/components/landing/animate-on-scroll";
+import { InlineVideo } from "@/components/landing/inline-video";
 
 interface Phase {
   title: string;
@@ -18,6 +19,7 @@ interface Tool {
 interface MethodData {
   title?: string;
   subtitle?: string;
+  videoUrl?: string;
   phases: Phase[];
   tools?: Tool[];
 }
@@ -33,19 +35,19 @@ export function MethodSection({ methodData }: MethodSectionProps) {
   const title = methodData.title ?? "Il Mio Metodo";
 
   return (
-    <section id="metodo" className="section-light py-24 md:py-32 lg:py-40">
+    <section id="metodo" className="section-premium py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <p
-          className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.15em]"
+          className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.2em]"
           style={{ color: "var(--generali-gold, #D4A537)" }}
         >
           Metodo
         </p>
-        <h2 className="mb-6 text-center text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-[-0.02em] text-[#1A1A1A]">
+        <h2 className="font-display mb-6 text-center text-[clamp(2rem,4vw,3.25rem)] tracking-[-0.01em] text-[#1A1A1A]">
           {title}
         </h2>
         {methodData.subtitle && (
-          <p className="mx-auto mb-16 max-w-2xl text-center text-lg text-[#6B7280]">
+          <p className="mx-auto mb-20 max-w-2xl text-center text-lg leading-relaxed text-[#6B7280]">
             {methodData.subtitle}
           </p>
         )}
@@ -58,36 +60,79 @@ export function MethodSection({ methodData }: MethodSectionProps) {
         >
           {phases.map((phase, i) => (
             <StaggerItem key={i}>
-              <div className="h-full rounded-2xl border border-[#E5E7EB] bg-white p-8 shadow-sm">
-                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#C21D17] text-sm font-bold text-white">
-                  {i + 1}
-                </div>
-                {phase.subtitle && (
-                  <p
-                    className="mb-1 text-xs font-semibold uppercase tracking-wider"
-                    style={{ color: "var(--generali-gold, #D4A537)" }}
+              <div
+                className="group h-full overflow-hidden rounded-2xl bg-white transition-all duration-500"
+                style={{
+                  boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
+                  border: "1px solid rgba(229,231,235,0.8)",
+                  transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+                }}
+                onMouseEnter={(e) => {
+                  const el = e.currentTarget;
+                  el.style.transform = "translateY(-4px)";
+                  el.style.boxShadow = "0 20px 50px rgba(0,0,0,0.1)";
+                }}
+                onMouseLeave={(e) => {
+                  const el = e.currentTarget;
+                  el.style.transform = "translateY(0)";
+                  el.style.boxShadow = "0 4px 24px rgba(0,0,0,0.06)";
+                }}
+              >
+                {/* Top accent gradient bar */}
+                <div
+                  className="h-1.5 w-full"
+                  style={{
+                    background:
+                      "linear-gradient(to right, var(--theme-color, #C21D17), var(--generali-gold, #D4A537))",
+                  }}
+                />
+
+                <div className="p-8">
+                  <div
+                    className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold text-white"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, var(--theme-color, #C21D17), #E8312B)",
+                      boxShadow: "0 4px 12px rgba(194,29,23,0.25)",
+                    }}
                   >
-                    {phase.subtitle}
+                    {i + 1}
+                  </div>
+                  {phase.subtitle && (
+                    <p
+                      className="mb-1 text-xs font-semibold uppercase tracking-wider"
+                      style={{ color: "var(--generali-gold, #D4A537)" }}
+                    >
+                      {phase.subtitle}
+                    </p>
+                  )}
+                  <h3 className="mb-3 text-xl font-bold text-[#1A1A1A]">
+                    {phase.title}
+                  </h3>
+                  <p className="mb-5 text-base leading-[1.7] text-[#6B7280]">
+                    {phase.description}
                   </p>
-                )}
-                <h3 className="mb-3 text-xl font-bold text-[#1A1A1A]">
-                  {phase.title}
-                </h3>
-                <p className="mb-4 text-base leading-relaxed text-[#6B7280]">
-                  {phase.description}
-                </p>
-                {phase.bullets && phase.bullets.length > 0 && (
-                  <ul className="space-y-2">
-                    {phase.bullets.map((bullet, j) => (
-                      <li key={j} className="flex items-start gap-2">
-                        <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#C21D17]">
-                          <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
-                        </span>
-                        <span className="text-sm text-[#6B7280]">{bullet}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                  {phase.bullets && phase.bullets.length > 0 && (
+                    <ul className="space-y-3">
+                      {phase.bullets.map((bullet, j) => (
+                        <li key={j} className="flex items-start gap-3">
+                          <span
+                            className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, var(--theme-color, #C21D17), #E8312B)",
+                            }}
+                          >
+                            <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                          </span>
+                          <span className="text-sm leading-relaxed text-[#6B7280]">
+                            {bullet}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
             </StaggerItem>
           ))}
@@ -95,8 +140,8 @@ export function MethodSection({ methodData }: MethodSectionProps) {
 
         {/* Tools section */}
         {tools && tools.length > 0 && (
-          <div className="mt-20">
-            <h3 className="mb-10 text-center text-2xl font-bold text-[#1A1A1A]">
+          <div className="mt-24">
+            <h3 className="font-display mb-12 text-center text-2xl text-[#1A1A1A]">
               Strumenti
             </h3>
             <StaggerContainer
@@ -106,14 +151,38 @@ export function MethodSection({ methodData }: MethodSectionProps) {
             >
               {tools.map((tool, i) => (
                 <StaggerItem key={i}>
-                  <div className="rounded-xl border-l-4 border-[#C21D17] bg-[#F9FAFB] p-6">
+                  <div
+                    className="group rounded-xl p-7 transition-all duration-500"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(194,29,23,0.02) 0%, rgba(212,165,55,0.03) 100%)",
+                      borderLeft: "4px solid transparent",
+                      borderImage:
+                        "linear-gradient(to bottom, var(--theme-color, #C21D17), var(--generali-gold, #D4A537)) 1",
+                      transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+                    }}
+                    onMouseEnter={(e) => {
+                      const el = e.currentTarget;
+                      el.style.transform = "translateY(-2px)";
+                      el.style.boxShadow = "0 8px 24px rgba(0,0,0,0.06)";
+                    }}
+                    onMouseLeave={(e) => {
+                      const el = e.currentTarget;
+                      el.style.transform = "translateY(0)";
+                      el.style.boxShadow = "none";
+                    }}
+                  >
                     <h4 className="mb-2 font-bold text-[#1A1A1A]">{tool.name}</h4>
-                    <p className="text-sm leading-relaxed text-[#6B7280]">{tool.description}</p>
+                    <p className="text-sm leading-[1.7] text-[#6B7280]">{tool.description}</p>
                   </div>
                 </StaggerItem>
               ))}
             </StaggerContainer>
           </div>
+        )}
+
+        {methodData.videoUrl && (
+          <InlineVideo url={methodData.videoUrl} />
         )}
       </div>
     </section>

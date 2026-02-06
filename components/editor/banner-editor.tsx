@@ -9,6 +9,7 @@ interface BannerData {
   imageUrl?: string;
   linkUrl?: string;
   altText?: string;
+  videoUrl?: string;
 }
 
 interface BannerEditorProps {
@@ -22,6 +23,7 @@ export function BannerEditor({ data, onChange }: BannerEditorProps) {
       imageUrl: data.imageUrl ?? "",
       linkUrl: data.linkUrl ?? "",
       altText: data.altText ?? "",
+      videoUrl: data.videoUrl ?? "",
     },
   });
 
@@ -31,6 +33,7 @@ export function BannerEditor({ data, onChange }: BannerEditorProps) {
         imageUrl: values.imageUrl || undefined,
         linkUrl: values.linkUrl || undefined,
         altText: values.altText || undefined,
+        videoUrl: values.videoUrl || undefined,
       });
     });
     return () => subscription.unsubscribe();
@@ -71,6 +74,18 @@ export function BannerEditor({ data, onChange }: BannerEditorProps) {
           placeholder="Descrizione del banner per accessibilita"
           {...register("altText")}
         />
+      </div>
+
+      <div className="space-y-2 border-t pt-4">
+        <Label htmlFor="banner-video">Video correlato (opzionale)</Label>
+        <Input
+          id="banner-video"
+          placeholder="URL YouTube o Vimeo (es. https://youtube.com/watch?v=...)"
+          {...register("videoUrl")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Se presente, il video viene mostrato nella sezione.
+        </p>
       </div>
     </div>
   );
