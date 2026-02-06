@@ -14,6 +14,9 @@ interface Skill {
   imageIcon?: string;
   imageUrl?: string;
   linkUrl?: string;
+  forWho?: string;
+  whatWeDo?: string;
+  benefit?: string;
 }
 
 interface SkillsData {
@@ -21,7 +24,7 @@ interface SkillsData {
 }
 
 interface SkillsFormValues {
-  skills: Array<{ name: string; description: string; icon: string; imageIcon: string; imageUrl: string; linkUrl: string }>;
+  skills: Array<{ name: string; description: string; icon: string; imageIcon: string; imageUrl: string; linkUrl: string; forWho: string; whatWeDo: string; benefit: string }>;
 }
 
 interface SkillsEditorProps {
@@ -38,6 +41,9 @@ function toFormValues(data: SkillsData): SkillsFormValues {
       imageIcon: s.imageIcon ?? "",
       imageUrl: s.imageUrl ?? "",
       linkUrl: s.linkUrl ?? "",
+      forWho: s.forWho ?? "",
+      whatWeDo: s.whatWeDo ?? "",
+      benefit: s.benefit ?? "",
     })),
   };
 }
@@ -53,6 +59,9 @@ function toSkillsData(values: SkillsFormValues): SkillsData {
         imageIcon: s.imageIcon || undefined,
         imageUrl: s.imageUrl || undefined,
         linkUrl: s.linkUrl || undefined,
+        forWho: s.forWho || undefined,
+        whatWeDo: s.whatWeDo || undefined,
+        benefit: s.benefit || undefined,
       })),
   };
 }
@@ -121,6 +130,18 @@ export function SkillsEditor({ data, onChange }: SkillsEditorProps) {
             placeholder="Link dettaglio (opzionale, es. https://...)"
             {...register(`skills.${index}.linkUrl`)}
           />
+          <Input
+            placeholder="Per chi (opzionale, es. Famiglie, imprenditori)"
+            {...register(`skills.${index}.forWho`)}
+          />
+          <Input
+            placeholder="Cosa facciamo (opzionale)"
+            {...register(`skills.${index}.whatWeDo`)}
+          />
+          <Input
+            placeholder="Beneficio (opzionale)"
+            {...register(`skills.${index}.benefit`)}
+          />
         </div>
       ))}
 
@@ -128,7 +149,7 @@ export function SkillsEditor({ data, onChange }: SkillsEditorProps) {
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => append({ name: "", description: "", icon: "", imageIcon: "", imageUrl: "", linkUrl: "" })}
+        onClick={() => append({ name: "", description: "", icon: "", imageIcon: "", imageUrl: "", linkUrl: "", forWho: "", whatWeDo: "", benefit: "" })}
       >
         <Plus className="h-4 w-4" />
         Aggiungi competenza

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Upload, Loader2, X } from "lucide-react";
@@ -12,7 +13,10 @@ import { toast } from "sonner";
 interface CoverData {
   headline?: string;
   subheadline?: string;
+  mainText?: string;
   ctaText?: string;
+  ctaSecondaryText?: string;
+  ctaSecondaryLink?: string;
   backgroundImage?: string;
   backgroundVideo?: string;
 }
@@ -100,11 +104,42 @@ export function CoverEditor({ data, onChange }: CoverEditorProps) {
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="cover-maintext">Testo principale (opzionale)</Label>
+        <Textarea
+          id="cover-maintext"
+          placeholder="Testo descrittivo sotto il titolo..."
+          rows={4}
+          {...register("mainText")}
+        />
+        <p className="text-xs text-muted-foreground">
+          Viene mostrato sotto il titolo principale nella hero section.
+        </p>
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor="cover-cta">Testo pulsante CTA</Label>
         <Input
           id="cover-cta"
           placeholder="Es. Chiedi un appuntamento"
           {...register("ctaText")}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="cover-cta-secondary">CTA Secondario (opzionale)</Label>
+        <Input
+          id="cover-cta-secondary"
+          placeholder="Es. Scopri il mio approccio"
+          {...register("ctaSecondaryText")}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="cover-cta-secondary-link">Link CTA Secondario</Label>
+        <Input
+          id="cover-cta-secondary-link"
+          placeholder="Es. #metodo"
+          {...register("ctaSecondaryLink")}
         />
       </div>
 

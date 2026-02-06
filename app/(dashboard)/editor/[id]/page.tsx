@@ -46,6 +46,11 @@ const SECTION_TO_DB_FIELD: Record<string, string> = {
   video: "videoData",
   portfolio: "portfolioData",
   quote: "quoteData",
+  values: "valuesData",
+  process: "processData",
+  method: "methodData",
+  strengths: "strengthsData",
+  faq: "faqData",
 };
 
 function buildInitialSections(
@@ -63,6 +68,11 @@ function buildInitialSections(
     videoData: unknown;
     portfolioData: unknown;
     quoteData: unknown;
+    valuesData: unknown;
+    processData: unknown;
+    methodData: unknown;
+    strengthsData: unknown;
+    faqData: unknown;
   } | undefined,
 ): Record<string, unknown> {
   if (!page) return {};
@@ -80,6 +90,11 @@ function buildInitialSections(
     video: page.videoData ?? {},
     portfolio: page.portfolioData ?? { items: [] },
     quote: page.quoteData ?? {},
+    values: page.valuesData ?? { items: [] },
+    process: page.processData ?? { steps: [] },
+    method: page.methodData ?? { phases: [], tools: [] },
+    strengths: page.strengthsData ?? { items: [] },
+    faq: page.faqData ?? { items: [] },
   };
 }
 
@@ -105,6 +120,8 @@ export default function EditorPage() {
   const [previewRefreshKey, setPreviewRefreshKey] = useState(0);
   const [mobileTab, setMobileTab] = useState<"editor" | "preview">("editor");
   const [seoOpen, setSeoOpen] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [hasPendingChanges, setHasPendingChanges] = useState(false);
 
   // Merge initial data with user overrides
   const sections = useMemo(
@@ -129,6 +146,8 @@ export default function EditorPage() {
     trpc.landingPages.updateSection.mutationOptions({
       onSuccess: () => {
         setPreviewRefreshKey((prev) => prev + 1);
+        setLastSaved(new Date());
+        setHasPendingChanges(false);
       },
       onError: (error) => {
         toast.error(`Errore nel salvataggio: ${error.message}`);
@@ -177,6 +196,7 @@ export default function EditorPage() {
     (sectionId: string, data: unknown) => {
       setSectionOverrides((prev) => ({ ...prev, [sectionId]: data }));
       pendingSavesRef.current.add(sectionId);
+      setHasPendingChanges(true);
 
       // Debounce: save after 1.5s of inactivity
       if (autoSaveTimerRef.current) {
@@ -302,12 +322,20 @@ export default function EditorPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          {isSaving && (
+          {isSaving ? (
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
               <Loader2 className="h-3 w-3 animate-spin" />
               Salvataggio...
             </span>
-          )}
+          ) : hasPendingChanges ? (
+            <span className="text-xs font-medium text-yellow-600">
+              Modifiche non salvate
+            </span>
+          ) : lastSaved ? (
+            <span className="text-xs text-muted-foreground">
+              Salvato alle {lastSaved.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
+            </span>
+          ) : null}
           <Button variant="outline" size="sm" onClick={handleSaveDraft}>
             <Save className="h-4 w-4" />
             Salva come bozza
@@ -366,6 +394,7 @@ export default function EditorPage() {
                   city: landingPage.consultant.city,
                   province: landingPage.consultant.province,
                 } : undefined}
+                consultantId={landingPage.consultantId}
               />
 
               {/* SEO & Analytics Collapsible */}

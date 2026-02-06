@@ -107,6 +107,11 @@ model LandingPage {
   videoData          Json? @map("video_data")
   portfolioData      Json? @map("portfolio_data")
   quoteData          Json? @map("quote_data")
+  valuesData         Json? @map("values_data")
+  processData        Json? @map("process_data")
+  methodData         Json? @map("method_data")
+  strengthsData      Json? @map("strengths_data")
+  faqData            Json? @map("faq_data")
 
   // SEO
   metaTitle       String? @map("meta_title")

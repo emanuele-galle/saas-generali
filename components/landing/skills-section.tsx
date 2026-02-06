@@ -17,22 +17,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { StaggerContainer, StaggerItem } from "@/components/landing/animate-on-scroll";
-import { SpotlightCard } from "@/components/ui/spotlight-card";
-import { BlurText } from "@/components/ui/blur-text";
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  Video,
-  BookOpen,
-  Mic,
-  Globe,
-  Megaphone,
-  PenTool,
-  Award,
-  Users,
-  TrendingUp,
-  Target,
-  Briefcase,
-  Heart,
+  Video, BookOpen, Mic, Globe, Megaphone, PenTool,
+  Award, Users, TrendingUp, Target, Briefcase, Heart,
 };
 
 interface Skill {
@@ -42,6 +30,9 @@ interface Skill {
   imageIcon?: string;
   imageUrl?: string;
   linkUrl?: string;
+  forWho?: string;
+  whatWeDo?: string;
+  benefit?: string;
 }
 
 interface SkillsData {
@@ -53,145 +44,108 @@ interface SkillsSectionProps {
   skillsData: SkillsData;
 }
 
-function PremiumCard({ skill }: { skill: Skill }) {
-  const content = (
-    <SpotlightCard
-      className="group relative overflow-hidden rounded-2xl h-full"
-      spotlightColor="rgba(255, 255, 255, 0.08)"
-    >
-      <div className="relative h-72 sm:h-80 w-full overflow-hidden">
-        <Image
-          src={skill.imageUrl!}
-          alt={skill.name}
-          fill
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80" />
-        <div className="absolute inset-x-0 bottom-0 p-7">
-          <h3 className="text-xl font-bold text-white mb-2 tracking-tight">
-            {skill.name}
-          </h3>
-          {skill.description && (
-            <p className="text-sm leading-relaxed text-white/60">
-              {skill.description}
-            </p>
-          )}
-        </div>
-      </div>
-      {/* Bottom accent line */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, var(--theme-color, #c21d17), var(--generali-gold, #D4A537), transparent)",
-        }}
-      />
-    </SpotlightCard>
-  );
-
-  if (skill.linkUrl) {
-    return (
-      <a href={skill.linkUrl} target="_blank" rel="noopener noreferrer" className="block h-full">
-        {content}
-      </a>
-    );
-  }
-  return content;
-}
-
-function ClassicCard({ skill }: { skill: Skill }) {
+function SkillCard({ skill }: { skill: Skill }) {
   const IconComponent = skill.icon ? ICON_MAP[skill.icon] : null;
 
-  const content = (
-    <SpotlightCard
-      className="card-premium gradient-border group flex h-full flex-col items-center rounded-2xl p-8 text-center"
-      spotlightColor="rgba(194, 29, 23, 0.1)"
-    >
-      {skill.imageIcon ? (
-        <div className="relative mb-6 h-16 w-16">
+  const card = (
+    <div className="card-bold group h-full overflow-hidden rounded-2xl">
+      {/* Image top */}
+      {skill.imageUrl ? (
+        <div className="relative aspect-[16/10] w-full overflow-hidden">
           <Image
-            src={skill.imageIcon}
+            src={skill.imageUrl}
             alt={skill.name}
             fill
-            className="object-contain"
+            className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
           />
         </div>
-      ) : IconComponent ? (
-        <div
-          className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(194,29,23,0.12), rgba(212,165,55,0.08))",
-          }}
-        >
-          <IconComponent className="h-7 w-7 text-[var(--theme-color,#C21D17)]" />
+      ) : (
+        <div className="flex aspect-[16/10] items-center justify-center bg-gradient-to-br from-[#C21D17]/5 to-[#D4A537]/5">
+          {skill.imageIcon ? (
+            <div className="relative h-16 w-16">
+              <Image src={skill.imageIcon} alt={skill.name} fill className="object-contain" />
+            </div>
+          ) : IconComponent ? (
+            <IconComponent className="h-16 w-16 text-[#C21D17]/60" />
+          ) : (
+            <span className="text-5xl font-black text-[#C21D17]/20">
+              {skill.name.charAt(0).toUpperCase()}
+            </span>
+          )}
         </div>
-      ) : null}
-
-      <h3 className="mb-3 text-lg font-semibold tracking-tight text-white">
-        {skill.name}
-      </h3>
-      {skill.description && (
-        <p className="text-sm leading-relaxed text-white/50">
-          {skill.description}
-        </p>
       )}
-    </SpotlightCard>
+
+      {/* Body */}
+      <div className="p-8">
+        <h3 className="text-xl font-bold text-[#1A1A1A]">{skill.name}</h3>
+        {skill.description && (
+          <p className="mt-2 text-base leading-relaxed text-[#6B7280]">
+            {skill.description}
+          </p>
+        )}
+        {(skill.forWho || skill.whatWeDo || skill.benefit) && (
+          <div className="mt-4 space-y-3 border-t border-[#E5E7EB] pt-4">
+            {skill.forWho && (
+              <div>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[#C21D17]">Per chi</span>
+                <p className="mt-0.5 text-sm text-[#6B7280]">{skill.forWho}</p>
+              </div>
+            )}
+            {skill.whatWeDo && (
+              <div>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[#C21D17]">Cosa facciamo</span>
+                <p className="mt-0.5 text-sm text-[#6B7280]">{skill.whatWeDo}</p>
+              </div>
+            )}
+            {skill.benefit && (
+              <div>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[#D4A537]">Il beneficio</span>
+                <p className="mt-0.5 text-sm font-medium text-[#1A1A1A]">{skill.benefit}</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom accent line on hover */}
+      <div className="h-1 w-0 bg-[#C21D17] transition-all duration-300 ease-out group-hover:w-full" />
+    </div>
   );
 
   if (skill.linkUrl) {
     return (
       <a href={skill.linkUrl} target="_blank" rel="noopener noreferrer" className="block h-full">
-        {content}
+        {card}
       </a>
     );
   }
-  return content;
+  return card;
 }
 
 export function SkillsSection({ skillsData }: SkillsSectionProps) {
   const { skills } = skillsData;
 
-  if (!skills || skills.length === 0) {
-    return null;
-  }
+  if (!skills || skills.length === 0) return null;
 
   const title = skillsData.title ?? "Competenze professionali";
-  const hasPremiumCards = skills.some((s) => s.imageUrl);
 
   return (
-    <section
-      id="competenze"
-      className="noise-overlay relative overflow-hidden py-24 sm:py-32"
-    >
-      <div className="absolute inset-0 bg-[#0b0b0b]" />
-      <div className="pointer-events-none absolute inset-0 line-pattern" />
-
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section id="servizi" className="bg-white py-24 md:py-32 lg:py-40">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <p
-          className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.3em]"
+          className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.15em]"
           style={{ color: "var(--generali-gold, #D4A537)" }}
         >
           Servizi
         </p>
-        <h2 className="mb-20 text-center text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
-          <BlurText text={title} delay={60} />
+        <h2 className="mb-16 text-center text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-[-0.02em] text-[#1A1A1A]">
+          {title}
         </h2>
 
-        <StaggerContainer
-          className={
-            hasPremiumCards
-              ? "grid gap-6 sm:grid-cols-2"
-              : "grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-          }
-        >
+        <StaggerContainer className="grid gap-8 md:grid-cols-2">
           {skills.map((skill, index) => (
             <StaggerItem key={index}>
-              {skill.imageUrl ? (
-                <PremiumCard skill={skill} />
-              ) : (
-                <ClassicCard skill={skill} />
-              )}
+              <SkillCard skill={skill} />
             </StaggerItem>
           ))}
         </StaggerContainer>

@@ -18,6 +18,11 @@ import { TestimonialsEditor } from "@/components/editor/testimonials-editor";
 import { VideoEditor } from "@/components/editor/video-editor";
 import { PortfolioEditor } from "@/components/editor/portfolio-editor";
 import { QuoteEditor } from "@/components/editor/quote-editor";
+import { ValuesEditor } from "@/components/editor/values-editor";
+import { ProcessEditor } from "@/components/editor/process-editor";
+import { MethodEditor } from "@/components/editor/method-editor";
+import { StrengthsEditor } from "@/components/editor/strengths-editor";
+import { FaqEditor } from "@/components/editor/faq-editor";
 
 interface ConsultantAddress {
   address?: string | null;
@@ -30,6 +35,7 @@ interface SectionPanelProps {
   sections: Record<string, unknown>;
   onSectionChange: (sectionId: string, data: unknown) => void;
   consultantAddress?: ConsultantAddress;
+  consultantId?: string;
 }
 
 /**
@@ -47,6 +53,7 @@ function getSectionEditor(
   data: unknown,
   onChange: (data: unknown) => void,
   consultantAddress?: ConsultantAddress,
+  consultantId?: string,
 ): ReactNode {
   const record = asRecord(data);
 
@@ -143,19 +150,116 @@ function getSectionEditor(
           onChange={onChange}
         />
       );
+    case "values":
+      return (
+        <ValuesEditor
+          data={{ items: [], ...record } as Parameters<typeof ValuesEditor>[0]["data"]}
+          onChange={onChange}
+        />
+      );
+    case "process":
+      return (
+        <ProcessEditor
+          data={{ steps: [], ...record } as Parameters<typeof ProcessEditor>[0]["data"]}
+          onChange={onChange}
+        />
+      );
+    case "method":
+      return (
+        <MethodEditor
+          data={{ phases: [], tools: [], ...record } as Parameters<typeof MethodEditor>[0]["data"]}
+          onChange={onChange}
+        />
+      );
+    case "strengths":
+      return (
+        <StrengthsEditor
+          data={{ items: [], ...record } as Parameters<typeof StrengthsEditor>[0]["data"]}
+          onChange={onChange}
+        />
+      );
+    case "faq":
+      return (
+        <FaqEditor
+          data={{ items: [], ...record } as Parameters<typeof FaqEditor>[0]["data"]}
+          onChange={onChange}
+        />
+      );
     default:
       return (
-        <p className="text-sm text-muted-foreground">
-          Questa sezione viene generata automaticamente dai dati del consulente.
-        </p>
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Questa sezione viene generata automaticamente dal profilo del consulente (nome, ruolo, contatti, certificazioni).
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Per modificare questi dati, accedi alla scheda del consulente.
+          </p>
+          {consultantId && (
+            <a
+              href={`/consultants/${consultantId}`}
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90"
+            >
+              Modifica profilo consulente
+            </a>
+          )}
+        </div>
       );
   }
 }
 
-export function SectionPanel({ sections, onSectionChange, consultantAddress }: SectionPanelProps) {
+function isSectionFilled(sectionId: string, data: unknown): boolean {
+  if (sectionId === "profile") return true; // Always filled from consultant data
+  const record = asRecord(data);
+  if (Object.keys(record).length === 0) return false;
+
+  switch (sectionId) {
+    case "cover":
+      return !!(record.imageUrl || record.videoUrl);
+    case "summary":
+      return !!(record.bio || record.quote || (Array.isArray(record.highlights) && record.highlights.length > 0));
+    case "map":
+      return !!(record.latitude && record.longitude);
+    case "skills":
+      return Array.isArray(record.skills) && record.skills.length > 0;
+    case "experiences":
+      return Array.isArray(record.experiences) && record.experiences.length > 0;
+    case "education":
+      return Array.isArray(record.items) && record.items.length > 0;
+    case "interests":
+      return Array.isArray(record.interests) && record.interests.length > 0;
+    case "banner":
+      return !!record.imageUrl;
+    case "focusOn":
+      return Array.isArray(record.articles) && record.articles.length > 0;
+    case "testimonials":
+      return Array.isArray(record.testimonials) && record.testimonials.length > 0;
+    case "video":
+      return !!(record.videoUrl || (Array.isArray(record.videos) && record.videos.length > 0));
+    case "portfolio":
+      return Array.isArray(record.items) && record.items.length > 0;
+    case "quote":
+      return !!record.text;
+    case "values":
+      return Array.isArray(record.items) && record.items.length > 0;
+    case "process":
+      return Array.isArray(record.steps) && record.steps.length > 0;
+    case "method":
+      return Array.isArray(record.phases) && record.phases.length > 0;
+    case "strengths":
+      return Array.isArray(record.items) && record.items.length > 0;
+    case "faq":
+      return Array.isArray(record.items) && record.items.length > 0;
+    default:
+      return false;
+  }
+}
+
+export function SectionPanel({ sections, onSectionChange, consultantAddress, consultantId }: SectionPanelProps) {
   return (
     <Accordion.Root type="single" collapsible className="space-y-2">
-      {LANDING_SECTIONS.map((section) => (
+      {LANDING_SECTIONS.map((section) => {
+        const filled = isSectionFilled(section.id, sections[section.id]);
+        return (
         <Accordion.Item
           key={section.id}
           value={section.id}
@@ -169,11 +273,17 @@ export function SectionPanel({ sections, onSectionChange, consultantAddress }: S
               "[&[data-state=open]>svg]:rotate-180",
             )}
           >
-            <span>
+            <span className="flex items-center">
               <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
                 {section.number}
               </span>
               {section.label}
+              <span
+                className={cn(
+                  "ml-2 h-2 w-2 rounded-full",
+                  filled ? "bg-green-500" : "bg-gray-300",
+                )}
+              />
             </span>
             <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
           </Accordion.Trigger>
@@ -184,11 +294,13 @@ export function SectionPanel({ sections, onSectionChange, consultantAddress }: S
                 sections[section.id],
                 (data) => onSectionChange(section.id, data),
                 consultantAddress,
+                consultantId,
               )}
             </div>
           </Accordion.Content>
         </Accordion.Item>
-      ))}
+        );
+      })}
     </Accordion.Root>
   );
 }

@@ -71,6 +71,11 @@ export const landingPagesRouter = createTRPCRouter({
           "videoData",
           "portfolioData",
           "quoteData",
+          "valuesData",
+          "processData",
+          "methodData",
+          "strengthsData",
+          "faqData",
         ]),
         data: z.any(),
       })
