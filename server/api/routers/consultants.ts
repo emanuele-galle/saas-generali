@@ -274,6 +274,16 @@ export const consultantsRouter = createTRPCRouter({
       }
 
       const { id, ...data } = input;
+
+      // Clean up old profile image file if being replaced
+      if (data.profileImage && consultant.profileImage && data.profileImage !== consultant.profileImage) {
+        const oldFilename = consultant.profileImage.split("/").pop();
+        if (oldFilename) {
+          unlink(path.join(UPLOAD_DIR, oldFilename)).catch(() => {});
+          ctx.db.media.deleteMany({ where: { filename: oldFilename } }).catch(() => {});
+        }
+      }
+
       return ctx.db.consultant.update({
         where: { id },
         data,

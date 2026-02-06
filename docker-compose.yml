@@ -19,6 +19,8 @@ services:
       - "traefik.http.routers.saas-generali.tls.certresolver=letsencrypt"
       - "traefik.http.routers.saas-generali.middlewares=security-headers@file,compress@file"
       - "traefik.http.services.saas-generali.loadbalancer.server.port=3000"
+    volumes:
+      - ./data/uploads:/app/data/uploads
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider --header='Host: saas-generali.fodivps1.cloud' http://127.0.0.1:3000/api/health || exit 1"]
       interval: 30s

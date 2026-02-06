@@ -101,9 +101,6 @@ export function ConsultantForm({
     try {
       const formData = new FormData();
       formData.append("file", file);
-      if (previewUrl) {
-        formData.append("replaceUrl", previewUrl);
-      }
 
       const res = await fetch("/api/upload", {
         method: "POST",
@@ -143,6 +140,7 @@ export function ConsultantForm({
                   alt="Foto profilo"
                   fill
                   className="object-cover"
+                  unoptimized
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center">
