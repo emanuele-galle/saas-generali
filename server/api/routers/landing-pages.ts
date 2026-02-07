@@ -49,6 +49,14 @@ export const landingPagesRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
+      // Check permissions: consultants can only view their own
+      if (
+        ctx.user.role === "CONSULTANT" &&
+        landingPage.consultant.userId !== ctx.user.id
+      ) {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
       return landingPage;
     }),
 
@@ -119,6 +127,24 @@ export const landingPagesRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { landingPageId, ...data } = input;
+
+      const landingPage = await ctx.db.landingPage.findUnique({
+        where: { id: landingPageId },
+        include: { consultant: true },
+      });
+
+      if (!landingPage) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      // Check permissions: consultants can only update their own
+      if (
+        ctx.user.role === "CONSULTANT" &&
+        landingPage.consultant.userId !== ctx.user.id
+      ) {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
       return ctx.db.landingPage.update({
         where: { id: landingPageId },
         data,

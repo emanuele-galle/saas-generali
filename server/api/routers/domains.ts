@@ -48,6 +48,15 @@ export const domainsRouter = createTRPCRouter({
         },
       });
       if (!domain) throw new TRPCError({ code: "NOT_FOUND" });
+
+      // Check permissions: consultants can only view their own domain
+      if (
+        ctx.user.role === "CONSULTANT" &&
+        domain.landingPage?.consultant?.userId !== ctx.user.id
+      ) {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
       return domain;
     }),
 
