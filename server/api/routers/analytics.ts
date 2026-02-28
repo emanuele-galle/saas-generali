@@ -404,7 +404,7 @@ export const analyticsRouter = createTRPCRouter({
           pagespeedDesktop: true,
           pagespeedCheckedAt: true,
           slug: true,
-          customDomain: { select: { domain: true } },
+          customDomains: { select: { domain: true } },
         },
       });
 
@@ -427,8 +427,9 @@ export const analyticsRouter = createTRPCRouter({
 
       // Fetch fresh scores
       const { fetchPageSpeedScores } = await import("@/lib/pagespeed");
-      const url = landingPage.customDomain?.domain
-        ? `https://${landingPage.customDomain.domain}`
+      const activeDomain = landingPage.customDomains?.find((d: { domain: string }) => d.domain);
+      const url = activeDomain
+        ? `https://${activeDomain.domain}`
         : `${process.env.NEXTAUTH_URL}/${landingPage.slug}`;
 
       const scores = await fetchPageSpeedScores(url);

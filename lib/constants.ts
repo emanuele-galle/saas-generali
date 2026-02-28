@@ -1,4 +1,4 @@
-export const GENERALI_BRAND = {
+const GENERALI_BRAND = {
   colors: {
     red: "#C21D17",
     darkRed: "#9B1610",
@@ -55,7 +55,7 @@ export const LANDING_SECTIONS = [
   { id: "method", label: "Il Metodo", number: 8 },
   { id: "strengths", label: "I Punti di Forza", number: 9 },
   { id: "experiences", label: "Le Esperienze", number: 10 },
-  { id: "education", label: "La Formazione", number: 11 },
+  { id: "education", label: "Le Certificazioni", number: 11 },
   { id: "interests", label: "Gli Interessi", number: 12 },
   { id: "banner", label: "Il Banner", number: 13 },
   { id: "focusOn", label: "Il Focus On", number: 14 },

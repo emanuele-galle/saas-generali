@@ -46,7 +46,7 @@ export const consultantsRouter = createTRPCRouter({
                 slug: true,
                 status: true,
                 views: true,
-                customDomain: { select: { id: true } },
+                customDomains: { select: { id: true } },
               },
             },
           },
@@ -74,7 +74,7 @@ export const consultantsRouter = createTRPCRouter({
           user: { select: { id: true, email: true, role: true } },
           landingPage: {
             include: {
-              customDomain: true,
+              customDomains: true,
               _count: { select: { contactSubmissions: true } },
             },
           },
@@ -103,7 +103,7 @@ export const consultantsRouter = createTRPCRouter({
       include: {
         landingPage: {
           include: {
-            customDomain: true,
+            customDomains: true,
             _count: { select: { contactSubmissions: true } },
           },
         },

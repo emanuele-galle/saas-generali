@@ -43,6 +43,7 @@ export function SeoAnalyticsEditor({
   );
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing state with prop changes
     setMetaTitle(initialTitle ?? "");
     setMetaDescription(initialDescription ?? "");
     setGa4MeasurementId(initialGa4 ?? "");

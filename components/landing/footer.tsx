@@ -46,6 +46,7 @@ export function LandingFooter({
     const existing = ALL_QUICK_LINKS.filter(
       (link) => document.getElementById(link.href.slice(1)) !== null
     );
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- filtering links based on DOM state on mount
     if (existing.length > 0) setQuickLinks(existing);
   }, []);
 

@@ -14,7 +14,7 @@ export const landingPagesRouter = createTRPCRouter({
         where: { id: input.id },
         include: {
           consultant: true,
-          customDomain: true,
+          customDomains: true,
         },
       });
 
@@ -41,7 +41,7 @@ export const landingPagesRouter = createTRPCRouter({
         where: { consultantId: input.consultantId },
         include: {
           consultant: true,
-          customDomain: true,
+          customDomains: true,
         },
       });
 

@@ -118,7 +118,7 @@ model LandingPage {
   metaDescription String? @db.Text @map("meta_description")
 
   // Dominio
-  customDomain CustomDomain?
+  customDomains CustomDomain[]
 
   // SEO & Analytics
   ga4MeasurementId   String?   @map("ga4_measurement_id")
@@ -142,15 +142,17 @@ model LandingPage {
 }
 
 model CustomDomain {
-  id              String       @id @default(cuid())
-  landingPageId   String       @unique @map("landing_page_id")
-  landingPage     LandingPage  @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
-  domain          String       @unique
-  status          DomainStatus @default(PENDING)
-  sslStatus       String?      @map("ssl_status")
-  verificationTxt String?      @map("verification_txt")
-  createdAt       DateTime     @default(now()) @map("created_at")
-  updatedAt       DateTime     @updatedAt @map("updated_at")
+  id                    String       @id @default(cuid())
+  landingPageId         String       @map("landing_page_id")
+  landingPage           LandingPage  @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
+  domain                String       @unique
+  status                DomainStatus @default(PENDING)
+  sslStatus             String?      @map("ssl_status")
+  verificationTxt       String?      @map("verification_txt")
+  cloudflareZoneId      String?      @map("cloudflare_zone_id")
+  cloudflareNameservers String?      @map("cloudflare_nameservers")
+  createdAt             DateTime     @default(now()) @map("created_at")
+  updatedAt             DateTime     @updatedAt @map("updated_at")
 
   @@map("custom_domains")
 }

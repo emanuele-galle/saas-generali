@@ -19,11 +19,16 @@ services:
       - "traefik.http.routers.saas-generali.tls.certresolver=letsencrypt"
       - "traefik.http.routers.saas-generali.middlewares=security-headers@file,compress@file"
       - "traefik.http.services.saas-generali.loadbalancer.server.port=3000"
-      # Custom domain: giuseppegugliemo.it
-      - "traefik.http.routers.saas-giuseppegugliemo.rule=Host(`giuseppegugliemo.it`) || Host(`www.giuseppegugliemo.it`)"
-      - "traefik.http.routers.saas-giuseppegugliemo.entrypoints=websecure"
-      - "traefik.http.routers.saas-giuseppegugliemo.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.saas-giuseppegugliemo.middlewares=security-headers@file,compress@file"
+      # Custom domain: giuseppeguglielmo.it
+      - "traefik.http.routers.saas-giuseppeguglielmo-it.rule=Host(`giuseppeguglielmo.it`) || Host(`www.giuseppeguglielmo.it`)"
+      - "traefik.http.routers.saas-giuseppeguglielmo-it.entrypoints=websecure"
+      - "traefik.http.routers.saas-giuseppeguglielmo-it.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.saas-giuseppeguglielmo-it.middlewares=security-headers@file,compress@file"
+      # Custom domain: giuseppeguglielmo.com
+      - "traefik.http.routers.saas-giuseppeguglielmo-com.rule=Host(`giuseppeguglielmo.com`) || Host(`www.giuseppeguglielmo.com`)"
+      - "traefik.http.routers.saas-giuseppeguglielmo-com.entrypoints=websecure"
+      - "traefik.http.routers.saas-giuseppeguglielmo-com.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.saas-giuseppeguglielmo-com.middlewares=security-headers@file,compress@file"
     volumes:
       - ./data/uploads:/app/data/uploads
     healthcheck:

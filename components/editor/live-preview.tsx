@@ -24,7 +24,8 @@ export function LivePreview({ slug, refreshKey }: LivePreviewProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("desktop");
   const [scale, setScale] = useState(1);
 
-  const previewUrl = `/${slug}?preview=true&t=${refreshKey}&_=${Date.now()}`;
+  const [timestamp] = useState(() => Date.now());
+  const previewUrl = `/${slug}?preview=true&t=${refreshKey}&_=${timestamp}`;
 
   const updateScale = useCallback(() => {
     if (!containerRef.current) return;

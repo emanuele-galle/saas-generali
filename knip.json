@@ -1,0 +1,30 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": [
+    "app/**/page.{ts,tsx}",
+    "app/**/layout.{ts,tsx}",
+    "app/**/route.{ts,tsx}",
+    "app/**/error.{ts,tsx}",
+    "app/**/not-found.{ts,tsx}",
+    "app/**/loading.{ts,tsx}",
+    "auth.ts",
+    "next.config.{js,mjs,ts}",
+    "prisma/seed.{ts,js}",
+    "prisma/scripts/*.ts"
+  ],
+  "project": [
+    "app/**/*.{ts,tsx}",
+    "components/**/*.{ts,tsx}",
+    "lib/**/*.{ts,tsx}",
+    "server/**/*.{ts,tsx}",
+    "prisma/**/*.ts"
+  ],
+  "ignoreDependencies": [
+    "@types/*",
+    "tailwindcss"
+  ],
+  "ignoreExportsUsedInFile": true,
+  "ignore": [
+    "components/ui/**"
+  ]
+}

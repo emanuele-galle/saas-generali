@@ -5,8 +5,22 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
-        disallow: ["/api/", "/consultants/", "/domains/", "/submissions/", "/media/", "/settings/", "/editor/", "/my-profile/", "/my-landing/"],
+        allow: ["/", "/api/uploads/", "/api/vcard/"],
+        disallow: [
+          "/api/",
+          "/login",
+          "/forgot-password",
+          "/reset-password",
+          "/invite",
+          "/consultants/",
+          "/domains/",
+          "/submissions/",
+          "/media/",
+          "/settings/",
+          "/editor/",
+          "/my-profile/",
+          "/my-landing/",
+        ],
       },
     ],
   };

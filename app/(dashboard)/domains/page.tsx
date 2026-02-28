@@ -47,15 +47,32 @@ import {
   Trash2,
   Copy,
   ExternalLink,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 
-const VPS_IP = process.env.NEXT_PUBLIC_VPS_IP || "193.203.190.63";
+type DomainRow = {
+  id: string;
+  domain: string;
+  status: string;
+  sslStatus: string | null;
+  verificationTxt: string | null;
+  cloudflareZoneId: string | null;
+  cloudflareNameservers: string | null;
+  landingPage?: {
+    slug: string;
+    consultant?: {
+      firstName: string;
+      lastName: string;
+    };
+  };
+};
 
 export default function DomainsPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [newDomain, setNewDomain] = useState("");
   const [selectedLandingPage, setSelectedLandingPage] = useState("");
+  const [checkingStatusId, setCheckingStatusId] = useState<string | null>(null);
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
@@ -75,7 +92,7 @@ export default function DomainsPage() {
         setIsOpen(false);
         setNewDomain("");
         setSelectedLandingPage("");
-        toast.success("Dominio aggiunto");
+        toast.success("Dominio aggiunto e zona Cloudflare creata");
       },
       onError: (error) => {
         toast.error(error.message);
@@ -99,13 +116,31 @@ export default function DomainsPage() {
     trpc.domains.delete.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: trpc.domains.list.queryKey() });
-        toast.success("Dominio rimosso");
+        toast.success("Dominio e zona Cloudflare rimossi");
       },
     })
   );
 
+  // Check Cloudflare zone propagation status
+  const checkStatusQuery = useQuery(
+    trpc.domains.checkStatus.queryOptions(
+      { id: checkingStatusId! },
+      { enabled: !!checkingStatusId },
+    )
+  );
+
+  const handleCheckStatus = (domainId: string) => {
+    setCheckingStatusId(domainId);
+    // Refetch when clicking again
+    if (checkingStatusId === domainId) {
+      queryClient.invalidateQueries({
+        queryKey: trpc.domains.checkStatus.queryKey({ id: domainId }),
+      });
+    }
+  };
+
   const consultantsWithLandingPages = consultantsData?.consultants.filter(
-    (c) => c.landingPage && !c.landingPage.customDomain
+    (c) => c.landingPage
   );
 
   const statusIcon = (status: string) => {
@@ -130,6 +165,26 @@ export default function DomainsPage() {
     }
   };
 
+  const cfZoneBadge = (d: DomainRow) => {
+    if (!d.cloudflareZoneId) return <Badge variant="secondary">N/A</Badge>;
+    if (checkingStatusId === d.id && checkStatusQuery.data) {
+      const zs = checkStatusQuery.data.zoneStatus;
+      if (zs === "active") return <Badge variant="success">CF Attiva</Badge>;
+      if (zs === "error") return <Badge variant="destructive">CF Errore</Badge>;
+      return <Badge variant="secondary">CF Pending</Badge>;
+    }
+    return <Badge variant="secondary">CF Configurata</Badge>;
+  };
+
+  const parseNameservers = (ns: string | null): string[] => {
+    if (!ns) return [];
+    try {
+      return JSON.parse(ns);
+    } catch {
+      return [];
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -150,7 +205,8 @@ export default function DomainsPage() {
             <DialogHeader>
               <DialogTitle>Aggiungi Dominio</DialogTitle>
               <DialogDescription>
-                Associa un dominio personalizzato a una landing page
+                Associa un dominio personalizzato a una landing page. La zona DNS
+                e i record verranno creati automaticamente su Cloudflare.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
@@ -199,7 +255,7 @@ export default function DomainsPage() {
                   !newDomain || !selectedLandingPage || createMutation.isPending
                 }
               >
-                {createMutation.isPending ? "Aggiunta..." : "Aggiungi"}
+                {createMutation.isPending ? "Creazione zona..." : "Aggiungi"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -213,8 +269,8 @@ export default function DomainsPage() {
             Domini Configurati
           </CardTitle>
           <CardDescription>
-            Dopo aver aggiunto un dominio, configura il record DNS TXT per la
-            verifica e il record A che punta al server.
+            I record DNS vengono creati automaticamente su Cloudflare. Dopo
+            l&apos;aggiunta, imposta i nameserver sul registrar del dominio.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -236,27 +292,15 @@ export default function DomainsPage() {
                   <TableHead>Dominio</TableHead>
                   <TableHead>Consulente</TableHead>
                   <TableHead>Stato</TableHead>
-                  <TableHead>SSL</TableHead>
-                  <TableHead>Verifica DNS</TableHead>
+                  <TableHead>Zona CF</TableHead>
+                  <TableHead>Nameservers</TableHead>
                   <TableHead className="text-right">Azioni</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {domains.map((domain: Record<string, unknown>) => {
-                  const d = domain as {
-                    id: string;
-                    domain: string;
-                    status: string;
-                    sslStatus: string | null;
-                    verificationTxt: string | null;
-                    landingPage?: {
-                      slug: string;
-                      consultant?: {
-                        firstName: string;
-                        lastName: string;
-                      };
-                    };
-                  };
+                  const d = domain as DomainRow;
+                  const nameservers = parseNameservers(d.cloudflareNameservers);
                   return (
                     <TableRow key={d.id}>
                       <TableCell>
@@ -271,39 +315,61 @@ export default function DomainsPage() {
                           : "-"}
                       </TableCell>
                       <TableCell>{statusBadge(d.status)}</TableCell>
+                      <TableCell>{cfZoneBadge(d)}</TableCell>
                       <TableCell>
-                        {d.sslStatus === "active" ? (
-                          <Badge variant="success">SSL Attivo</Badge>
-                        ) : (
-                          <Badge variant="secondary">
-                            {d.sslStatus || "In attesa"}
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {d.verificationTxt && (
+                        {nameservers.length > 0 ? (
                           <div className="flex items-center gap-1">
-                            <code className="text-xs bg-muted px-2 py-1 rounded max-w-[200px] truncate">
-                              {d.verificationTxt}
-                            </code>
+                            <div className="space-y-0.5">
+                              {nameservers.map((ns) => (
+                                <code
+                                  key={ns}
+                                  className="block text-xs bg-muted px-2 py-0.5 rounded"
+                                >
+                                  {ns}
+                                </code>
+                              ))}
+                            </div>
                             <Button
                               variant="ghost"
                               size="icon"
                               className="h-6 w-6"
                               onClick={() => {
                                 navigator.clipboard.writeText(
-                                  d.verificationTxt!
+                                  nameservers.join("\n")
                                 );
-                                toast.success("Copiato");
+                                toast.success("Nameservers copiati");
                               }}
                             >
                               <Copy className="h-3 w-3" />
                             </Button>
                           </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">-</span>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
+                          {d.cloudflareZoneId && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleCheckStatus(d.id)}
+                              disabled={
+                                checkingStatusId === d.id &&
+                                checkStatusQuery.isLoading
+                              }
+                            >
+                              <RefreshCw
+                                className={`h-3 w-3 mr-1 ${
+                                  checkingStatusId === d.id &&
+                                  checkStatusQuery.isLoading
+                                    ? "animate-spin"
+                                    : ""
+                                }`}
+                              />
+                              Propagazione
+                            </Button>
+                          )}
                           {d.status === "PENDING" && (
                             <Button
                               variant="outline"
@@ -352,35 +418,33 @@ export default function DomainsPage() {
         <CardHeader>
           <CardTitle>Istruzioni DNS</CardTitle>
           <CardDescription>
-            Come configurare un dominio personalizzato
+            Come funziona la configurazione automatica dei domini
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <h4 className="font-semibold">1. Record A</h4>
+            <h4 className="font-semibold">1. Creazione automatica</h4>
             <p className="text-sm text-muted-foreground">
-              Aggiungi un record A sul tuo registrar DNS che punta al nostro
-              server:
+              Quando aggiungi un dominio, il sistema crea automaticamente la zona
+              su Cloudflare con i record DNS necessari (A per @ e www che puntano
+              al server).
             </p>
-            <code className="block bg-muted p-3 rounded text-sm">
-              Tipo: A | Nome: @ | Valore: {VPS_IP} | TTL: Auto
-            </code>
           </div>
           <div className="space-y-2">
-            <h4 className="font-semibold">2. Record TXT (Verifica)</h4>
+            <h4 className="font-semibold">2. Configura i Nameservers</h4>
             <p className="text-sm text-muted-foreground">
-              Aggiungi un record TXT con il valore di verifica fornito sopra:
+              Vai sul registrar del dominio (es. GoDaddy, Aruba, Register.it) e
+              imposta i nameservers Cloudflare assegnati mostrati nella tabella
+              sopra. Questo e l&apos;unico passaggio manuale richiesto.
             </p>
-            <code className="block bg-muted p-3 rounded text-sm">
-              Tipo: TXT | Nome: @ | Valore: saas-generali-verify=...
-            </code>
           </div>
           <div className="space-y-2">
-            <h4 className="font-semibold">3. Verifica</h4>
+            <h4 className="font-semibold">3. Attendi la propagazione</h4>
             <p className="text-sm text-muted-foreground">
-              Dopo aver configurato i record DNS, clicca &quot;Verifica&quot;
-              per attivare il dominio. La propagazione DNS puo richiedere fino a
-              48 ore.
+              La propagazione dei nameservers puo richiedere fino a 48 ore. Usa
+              il bottone &quot;Propagazione&quot; per controllare se la zona
+              Cloudflare e attiva. Quando lo stato diventa &quot;CF Attiva&quot;,
+              clicca &quot;Verifica&quot; per attivare il dominio.
             </p>
           </div>
         </CardContent>

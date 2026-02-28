@@ -5,12 +5,14 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { ImageUploadField } from "@/components/ui/image-upload-field";
 import { Plus, Trash2 } from "lucide-react";
 
 interface EducationItem {
   institution: string;
   degree: string;
   year?: string;
+  imageUrl?: string;
 }
 
 interface EducationData {
@@ -20,7 +22,7 @@ interface EducationData {
 
 interface EducationFormValues {
   videoUrl: string;
-  items: Array<{ institution: string; degree: string; year: string }>;
+  items: Array<{ institution: string; degree: string; year: string; imageUrl: string }>;
 }
 
 interface EducationEditorProps {
@@ -35,6 +37,7 @@ function toFormValues(data: EducationData): EducationFormValues {
       institution: item.institution,
       degree: item.degree,
       year: item.year ?? "",
+      imageUrl: item.imageUrl ?? "",
     })),
   };
 }
@@ -51,6 +54,7 @@ function toEducationData(values: EducationFormValues): EducationData {
         institution: item.institution,
         degree: item.degree,
         year: item.year || undefined,
+        imageUrl: item.imageUrl || undefined,
       })),
   };
 }
@@ -72,9 +76,17 @@ export function EducationEditor({ data, onChange }: EducationEditorProps) {
     return () => subscription.unsubscribe();
   }, [watch, onChange]);
 
+  const handleImageChange = (index: number, url: string) => {
+    const current = watch();
+    const updated = { ...current };
+    updated.items = [...current.items];
+    updated.items[index] = { ...updated.items[index], imageUrl: url };
+    onChange(toEducationData(updated));
+  };
+
   return (
     <div className="space-y-4">
-      <Label>Percorso formativo</Label>
+      <Label>Certificazioni</Label>
 
       {fields.map((field, index) => (
         <div
@@ -83,7 +95,7 @@ export function EducationEditor({ data, onChange }: EducationEditorProps) {
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-muted-foreground">
-              Titolo {index + 1}
+              Certificazione {index + 1}
             </span>
             <Button
               type="button"
@@ -95,16 +107,23 @@ export function EducationEditor({ data, onChange }: EducationEditorProps) {
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>
+          <ImageUploadField
+            value={watch(`items.${index}.imageUrl`) ?? ""}
+            onChange={(url) => handleImageChange(index, url)}
+            label="Immagine certificazione"
+            placeholder="Carica immagine certificazione"
+            aspect="square"
+          />
           <Input
-            placeholder="Istituto / Universita"
+            placeholder="Ente certificatore"
             {...register(`items.${index}.institution`)}
           />
           <Input
-            placeholder="Titolo di studio"
+            placeholder="Nome certificazione"
             {...register(`items.${index}.degree`)}
           />
           <Input
-            placeholder="Anno (es. 2015)"
+            placeholder="Anno (es. 2023)"
             {...register(`items.${index}.year`)}
           />
         </div>
@@ -114,10 +133,10 @@ export function EducationEditor({ data, onChange }: EducationEditorProps) {
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => append({ institution: "", degree: "", year: "" })}
+        onClick={() => append({ institution: "", degree: "", year: "", imageUrl: "" })}
       >
         <Plus className="h-4 w-4" />
-        Aggiungi titolo di studio
+        Aggiungi certificazione
       </Button>
 
       <div className="space-y-2 border-t pt-4">

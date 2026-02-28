@@ -205,6 +205,7 @@ function getSectionEditor(
   }
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity -- complex business logic with many section types
 function isSectionFilled(sectionId: string, data: unknown): boolean {
   if (sectionId === "profile") return true; // Always filled from consultant data
   const record = asRecord(data);

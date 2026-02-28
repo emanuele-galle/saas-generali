@@ -1,0 +1,35 @@
+{
+  "cookies": [
+    {
+      "name": "__Host-authjs.csrf-token",
+      "value": "20414ab9090ae9aee93bd7a107e1c2d83bdbf1e65ebac255a13bb264ff9cea6e%7C36a538e469c92ee14c043530b642afe74bdfcef192bead0226e8acb0487ac8c8",
+      "domain": "saas-generali.fodivps1.cloud",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-authjs.callback-url",
+      "value": "https%3A%2F%2Fsaas-generali.fodivps1.cloud%2Flogin",
+      "domain": "saas-generali.fodivps1.cloud",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Secure-authjs.session-token",
+      "value": "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2Q0JDLUhTNTEyIiwia2lkIjoidWgzY1d2Tkh5YkdCa2JHY3JvNHdCd0JLWUdkTFRlai1aZDJXVjFuRDctSVFxb0wtOHpmSlJtYmNQOE9tSHlvOWxhYlVPdXlmd0Y2bXdfU2U1MTVKeEEifQ..l65qDZsELTsGnoYwyEZtag.JuByF0DJFZEDTT8G_MCshbgE4RPM3axS0VsiZFOEtXLsWbAhmDN1rLgbcj_b92mCYjjipO51PdCNK04VT3g7CFIVWPlLfFRsz4hyAjSWO7PIcPajaljIALSBNBgB8phPAReymYhJWkEtvI2XfHIInFZfuAO4GOFlEkVherXR2k4m2iPDcbvGEVTati9kv0BHLrqRS42gDyNMJ1D_idNj-OQ5xVYAykTk9UtKQPEM5RQw4mktTPgfycxj21Pox8wtRyPhMVS3WxWpFlefHl7qvqck5npALrIpxb2yMFRJ32U6ttVIftrT4ieBnOdAip1i.3qNYSyaTCxIFGY8RsdiTZuL8ZdIG6lpfLQLhrUCNgWI",
+      "domain": "saas-generali.fodivps1.cloud",
+      "path": "/",
+      "expires": 1773077145.218645,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}

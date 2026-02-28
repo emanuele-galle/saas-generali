@@ -24,6 +24,10 @@ export const metadata: Metadata = {
   },
   description:
     "Piattaforma di gestione landing page personali per i consulenti del Gruppo Generali.",
+  robots: {
+    index: false,
+    follow: false,
+  },
   icons: {
     icon: "/images/generali-logo.svg",
   },

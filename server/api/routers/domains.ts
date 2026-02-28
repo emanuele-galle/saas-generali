@@ -7,6 +7,14 @@ import {
 import { TRPCError } from "@trpc/server";
 import { randomBytes } from "crypto";
 import { verifyDNS } from "@/lib/dns";
+import {
+  createZone,
+  addDNSRecord,
+  deleteZone,
+  getZoneStatus,
+} from "@/lib/cloudflare";
+
+const VPS_IP = process.env.NEXT_PUBLIC_VPS_IP || "193.203.190.63";
 
 export const domainsRouter = createTRPCRouter({
   // List all domains (admin) or own domain (consultant)
@@ -17,12 +25,12 @@ export const domainsRouter = createTRPCRouter({
         where: { userId: ctx.user.id },
         include: {
           landingPage: {
-            include: { customDomain: true },
+            include: { customDomains: true },
           },
         },
       });
-      if (!consultant?.landingPage?.customDomain) return [];
-      return [consultant.landingPage.customDomain];
+      if (!consultant?.landingPage?.customDomains?.length) return [];
+      return consultant.landingPage.customDomains;
     }
 
     return ctx.db.customDomain.findMany({
@@ -82,31 +90,50 @@ export const domainsRouter = createTRPCRouter({
         });
       }
 
-      // Check landing page exists and doesn't already have a domain
+      // Check landing page exists
       const landingPage = await ctx.db.landingPage.findUnique({
         where: { id: input.landingPageId },
-        include: { customDomain: true },
       });
       if (!landingPage) {
         throw new TRPCError({ code: "NOT_FOUND" });
-      }
-      if (landingPage.customDomain) {
-        throw new TRPCError({
-          code: "CONFLICT",
-          message: "Questa landing page ha già un dominio associato",
-        });
       }
 
       // Generate TXT verification record
       const verificationTxt = `saas-generali-verify=${randomBytes(16).toString("hex")}`;
 
+      const domainName = input.domain.toLowerCase();
+
+      // Create Cloudflare zone + DNS records
+      let cloudflareZoneId: string | null = null;
+      let cloudflareNameservers: string | null = null;
+
+      try {
+        const zone = await createZone(domainName);
+        cloudflareZoneId = zone.zoneId;
+        cloudflareNameservers = JSON.stringify(zone.nameservers);
+
+        // Add A record for @ (root domain) — proxied: false (SSL gestito da Traefik)
+        await addDNSRecord(zone.zoneId, "A", domainName, VPS_IP, false);
+
+        // Add A record for www
+        await addDNSRecord(zone.zoneId, "A", `www.${domainName}`, VPS_IP, false);
+
+        // Add TXT verification record
+        await addDNSRecord(zone.zoneId, "TXT", domainName, verificationTxt, false);
+      } catch (error) {
+        console.error("Errore Cloudflare durante creazione zona:", error);
+        // Non blocchiamo la creazione del dominio nel DB se Cloudflare fallisce
+      }
+
       return ctx.db.customDomain.create({
         data: {
           landingPageId: input.landingPageId,
-          domain: input.domain.toLowerCase(),
+          domain: domainName,
           verificationTxt,
           status: "PENDING",
           sslStatus: "pending",
+          cloudflareZoneId,
+          cloudflareNameservers,
         },
       });
     }),
@@ -126,11 +153,10 @@ export const domainsRouter = createTRPCRouter({
         });
       }
 
-      const expectedIP = process.env.NEXT_PUBLIC_VPS_IP || "193.203.190.63";
       const result = await verifyDNS(
         domain.domain,
         domain.verificationTxt,
-        expectedIP,
+        VPS_IP,
       );
 
       if (!result.valid) {
@@ -149,6 +175,31 @@ export const domainsRouter = createTRPCRouter({
       });
     }),
 
+  // Check Cloudflare zone status
+  checkStatus: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const domain = await ctx.db.customDomain.findUnique({
+        where: { id: input.id },
+      });
+      if (!domain) throw new TRPCError({ code: "NOT_FOUND" });
+
+      if (!domain.cloudflareZoneId) {
+        return { zoneStatus: null, nameservers: [] };
+      }
+
+      try {
+        const result = await getZoneStatus(domain.cloudflareZoneId);
+        return {
+          zoneStatus: result.status,
+          nameservers: result.nameservers,
+        };
+      } catch (error) {
+        console.error("Errore Cloudflare checkStatus:", error);
+        return { zoneStatus: "error", nameservers: [] };
+      }
+    }),
+
   // Delete domain
   delete: adminProcedure
     .input(z.object({ id: z.string() }))
@@ -157,6 +208,16 @@ export const domainsRouter = createTRPCRouter({
         where: { id: input.id },
       });
       if (!domain) throw new TRPCError({ code: "NOT_FOUND" });
+
+      // Delete Cloudflare zone if exists
+      if (domain.cloudflareZoneId) {
+        try {
+          await deleteZone(domain.cloudflareZoneId);
+        } catch (error) {
+          console.error("Errore Cloudflare durante eliminazione zona:", error);
+          // Procediamo con la cancellazione dal DB anche se Cloudflare fallisce
+        }
+      }
 
       return ctx.db.customDomain.delete({
         where: { id: input.id },

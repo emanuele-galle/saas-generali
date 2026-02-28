@@ -9,8 +9,9 @@ interface PageProps {
 }
 
 async function getLandingPageByDomain(hostname: string) {
+  const normalizedHostname = hostname.replace(/^www\./, "");
   const customDomain = await db.customDomain.findUnique({
-    where: { domain: hostname, status: "ACTIVE" },
+    where: { domain: normalizedHostname, status: "ACTIVE" },
     include: {
       landingPage: {
         include: { consultant: true },
@@ -31,28 +32,33 @@ export async function generateMetadata({
   }
 
   const { consultant } = landingPage;
+  const normalizedHostname = decodeURIComponent(hostname).replace(/^www\./, "");
   const fullName = [consultant.title, consultant.firstName, consultant.lastName]
     .filter(Boolean)
     .join(" ");
 
-  const title =
+  const titleString =
     landingPage.metaTitle ?? `${fullName} - ${consultant.role} | Generali`;
   const description =
     landingPage.metaDescription ??
     `Pagina personale di ${fullName}, ${consultant.role} presso Generali Italia.`;
 
   return {
-    title,
+    title: { absolute: titleString },
     description,
+    alternates: {
+      canonical: `https://${normalizedHostname}/`,
+    },
+    robots: { index: true, follow: true },
     openGraph: {
-      title,
+      title: titleString,
       description,
       type: "profile",
       ...(consultant.profileImage
         ? {
             images: [
               {
-                url: consultant.profileImage,
+                url: `https://${normalizedHostname}${consultant.profileImage}`,
                 width: 400,
                 height: 400,
                 alt: fullName,

@@ -1,4 +1,4 @@
-import { createTRPCRouter, createCallerFactory } from "./trpc";
+import { createTRPCRouter } from "./trpc";
 import { consultantsRouter } from "./routers/consultants";
 import { landingPagesRouter } from "./routers/landing-pages";
 import { submissionsRouter } from "./routers/submissions";
@@ -21,4 +21,3 @@ export const appRouter = createTRPCRouter({
 
 export type AppRouter = typeof appRouter;
 
-export const createCaller = createCallerFactory(appRouter);

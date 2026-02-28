@@ -10,6 +10,11 @@ export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const hostname = req.headers.get("host")?.split(":")[0] ?? "";
 
+  // Allow public API paths first (must work on custom domains too)
+  if (publicPaths.some((p) => pathname.startsWith(p))) {
+    return NextResponse.next();
+  }
+
   // Custom domain routing: if host is not the main app domain and not localhost,
   // rewrite to the landing page resolver which will look up the domain in DB
   if (
@@ -22,11 +27,6 @@ export function middleware(req: NextRequest) {
     const url = req.nextUrl.clone();
     url.pathname = `/domain/${hostname}${pathname}`;
     return NextResponse.rewrite(url);
-  }
-
-  // Allow public API paths
-  if (publicPaths.some((p) => pathname.startsWith(p))) {
-    return NextResponse.next();
   }
 
   // Allow landing page routes (single slug, public)

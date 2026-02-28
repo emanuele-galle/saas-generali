@@ -134,7 +134,7 @@ interface ParallaxSectionProps {
   className?: string;
 }
 
-export function ParallaxSection({
+function ParallaxSection({
   children,
   speed = 0.3,
   className,
@@ -219,7 +219,7 @@ interface CountUpProps {
   className?: string;
 }
 
-export function CountUp({
+function CountUp({
   target,
   duration = 2,
   suffix = "",

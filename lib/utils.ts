@@ -14,7 +14,7 @@ export function slugify(text: string): string {
     .replace(/(^-|-$)+/g, "");
 }
 
-export function formatDate(date: Date | string): string {
+function formatDate(date: Date | string): string {
   return new Intl.DateTimeFormat("it-IT", {
     day: "2-digit",
     month: "2-digit",
