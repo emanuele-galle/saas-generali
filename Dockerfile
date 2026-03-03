@@ -1,7 +1,9 @@
 FROM node:24-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
-COPY package*.json ./
+COPY package*.json .npmrc ./
+COPY prisma/schema.prisma prisma/schema.prisma
+COPY prisma.config.ts ./
 RUN npm ci --legacy-peer-deps
 
 FROM node:24-alpine AS builder
@@ -10,7 +12,6 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV SKIP_ENV_VALIDATION=1
-RUN npx prisma generate
 RUN npm run build
 
 FROM node:24-alpine AS runner
