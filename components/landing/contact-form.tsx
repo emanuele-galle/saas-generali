@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import Image from "next/image";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,8 +47,6 @@ export function ContactForm({
   consultantName,
   consultantEmail,
   consultantPhone,
-  consultantImage,
-  consultantRole,
   consultantAddress,
   mapData,
 }: ContactFormProps) {

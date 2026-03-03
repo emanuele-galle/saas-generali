@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+
 import { Button } from "@/components/ui/button";
 import { ImageUploadField } from "@/components/ui/image-upload-field";
 import { Plus, Trash2 } from "lucide-react";

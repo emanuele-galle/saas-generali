@@ -1,11 +1,9 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   motion,
   useScroll,
-  useTransform,
-  useInView,
   useSpring,
 } from "framer-motion";
 import type { ReactNode } from "react";
@@ -125,35 +123,6 @@ export function StaggerItem({
 }
 
 /* ------------------------------------------------------------------ */
-/*  ParallaxSection                                                   */
-/* ------------------------------------------------------------------ */
-
-interface ParallaxSectionProps {
-  children: ReactNode;
-  speed?: number;
-  className?: string;
-}
-
-function ParallaxSection({
-  children,
-  speed = 0.3,
-  className,
-}: ParallaxSectionProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], [speed * -100, speed * 100]);
-
-  return (
-    <div ref={ref} className={`relative overflow-hidden ${className ?? ""}`}>
-      <motion.div style={{ y }}>{children}</motion.div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /*  TextReveal - word-by-word or char-by-char                         */
 /* ------------------------------------------------------------------ */
 
@@ -204,56 +173,6 @@ export function TextReveal({
         </motion.span>
       ))}
     </motion.span>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  CountUp - Numeric animation from 0 to target                     */
-/* ------------------------------------------------------------------ */
-
-interface CountUpProps {
-  target: number;
-  duration?: number;
-  suffix?: string;
-  prefix?: string;
-  className?: string;
-}
-
-function CountUp({
-  target,
-  duration = 2,
-  suffix = "",
-  prefix = "",
-  className,
-}: CountUpProps) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-30px" });
-  const springValue = useSpring(0, {
-    duration: duration * 1000,
-    bounce: 0,
-  });
-
-  useEffect(() => {
-    if (isInView) {
-      springValue.set(target);
-    }
-  }, [isInView, target, springValue]);
-
-  const [display, setDisplay] = useState(0);
-
-  useEffect(() => {
-    const unsubscribe = springValue.on("change", (latest) => {
-      setDisplay(Math.round(latest));
-    });
-    return unsubscribe;
-  }, [springValue]);
-
-  return (
-    <span ref={ref} className={className}>
-      {prefix}
-      {display}
-      {suffix}
-    </span>
   );
 }
 

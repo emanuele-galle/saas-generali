@@ -1,17 +1,3 @@
-const GENERALI_BRAND = {
-  colors: {
-    red: "#C21D17",
-    darkRed: "#9B1610",
-    white: "#FFFFFF",
-    lightGray: "#F5F5F5",
-    dark: "#1A1A1A",
-    text: "#333333",
-  },
-  fonts: {
-    primary: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-  },
-} as const;
-
 export const CONSULTANT_ROLES = [
   "Executive Manager",
   "Financial Advisor",

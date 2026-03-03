@@ -273,7 +273,7 @@ export function SectionPanel({ sections, onSectionChange, consultantAddress, con
         };
 
         const handleBackgroundChange = (bg: SectionBackground) => {
-          const { background: _, ...content } = sectionRecord;
+          const { background: _bg, ...content } = sectionRecord; // eslint-disable-line @typescript-eslint/no-unused-vars
           onSectionChange(
             section.id,
             bg.type === "default" ? content : { ...content, background: bg },

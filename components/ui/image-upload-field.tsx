@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import Image from "next/image";
 import { Upload, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -96,13 +97,16 @@ export function ImageUploadField({
           <span className="text-xs font-medium text-muted-foreground">{label}</span>
         )}
         <div className="group relative inline-block">
-          <img
+          <Image
             src={value}
             alt=""
+            width={aspect === "square" ? 64 : 128}
+            height={aspect === "square" ? 64 : 80}
             className={cn(
               "rounded-md border object-cover",
               aspect === "square" ? "h-16 w-16" : "h-20 w-32",
             )}
+            unoptimized
           />
           <button
             type="button"

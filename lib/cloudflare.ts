@@ -115,18 +115,3 @@ export async function getZoneStatus(zoneId: string): Promise<{ status: string; n
   };
 }
 
-async function listDNSRecords(zoneId: string): Promise<DNSRecord[]> {
-  const res = await fetch(`${CF_API}/zones/${zoneId}/dns_records?per_page=100`, {
-    method: "GET",
-    headers: getHeaders(),
-  });
-
-  const data: CloudflareResponse<DNSRecord[]> = await res.json();
-
-  if (!data.success) {
-    const msg = data.errors.map((e) => e.message).join(", ");
-    throw new Error(`Cloudflare listDNSRecords: ${msg}`);
-  }
-
-  return data.result;
-}

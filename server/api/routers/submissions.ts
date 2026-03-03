@@ -54,7 +54,8 @@ export const submissionsRouter = createTRPCRouter({
         });
       }
 
-      const { honeypot: _h, formLoadedAt: _f, ...submissionData } = input;
+      // Strip honeypot fields before persisting
+      const { honeypot: _honeypot, formLoadedAt: _formLoadedAt, ...submissionData } = input; // eslint-disable-line @typescript-eslint/no-unused-vars
 
       const submission = await ctx.db.contactSubmission.create({
         data: submissionData,
