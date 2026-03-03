@@ -339,7 +339,7 @@ export function CustomVideoPlayer({
         height: "100%",
         playerVars: {
           autoplay: autoPlay ? 1 : 0,
-          mute: autoPlay ? 1 : 0,
+          mute: 0,
           controls: 0,
           rel: 0,
           modestbranding: 1,
@@ -418,7 +418,7 @@ export function CustomVideoPlayer({
         height: "100%",
         controls: false,
         autoplay: autoPlay,
-        muted: autoPlay,
+        muted: false,
         dnt: true,
         title: false,
         byline: false,
