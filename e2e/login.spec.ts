@@ -45,7 +45,7 @@ test.describe("Login Page", () => {
 
   test("successful login redirects to dashboard", async ({ page }) => {
     await page.goto("/login");
-    await page.getByLabel("Email").fill("admin@saas-generali.it");
+    await page.getByLabel("Email").fill("admin@saas-consulenti.it");
     await page.getByLabel("Password").fill("admin2026!");
     await page.getByRole("button", { name: /accedi/i }).click();
 

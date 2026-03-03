@@ -60,7 +60,7 @@ export function MapEditor({ data, onChange, consultantAddress }: MapEditorProps)
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addressText)}&format=json&limit=1`,
-        { headers: { "User-Agent": "SaasGenerali/1.0" } }
+        { headers: { "User-Agent": "SaasConsulenti/1.0" } }
       );
       const results = await response.json();
       if (results.length > 0) {

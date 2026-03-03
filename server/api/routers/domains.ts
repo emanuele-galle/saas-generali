@@ -99,7 +99,7 @@ export const domainsRouter = createTRPCRouter({
       }
 
       // Generate TXT verification record
-      const verificationTxt = `saas-generali-verify=${randomBytes(16).toString("hex")}`;
+      const verificationTxt = `saas-consulenti-verify=${randomBytes(16).toString("hex")}`;
 
       const domainName = input.domain.toLowerCase();
 

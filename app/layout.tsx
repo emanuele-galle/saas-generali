@@ -17,13 +17,13 @@ const dmSerif = DM_Serif_Display({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://saas-generali.fodivps1.cloud'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://saas-consulenti.fodivps1.cloud'),
   title: {
-    default: "Saas Generali - Gestione Landing Page Consulenti",
-    template: "%s | Saas Generali",
+    default: "Saas Consulenti - Gestione Landing Page Consulenti",
+    template: "%s | Saas Consulenti",
   },
   description:
-    "Piattaforma di gestione landing page personali per i consulenti del Gruppo Generali.",
+    "Piattaforma di gestione landing page personali per i consulenti del Gruppo.",
   robots: {
     index: false,
     follow: false,
@@ -34,10 +34,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "it_IT",
-    siteName: "Saas Generali",
-    title: "Saas Generali - Gestione Landing Page Consulenti",
+    siteName: "Saas Consulenti",
+    title: "Saas Consulenti - Gestione Landing Page Consulenti",
     description:
-      "Piattaforma di gestione landing page personali per i consulenti del Gruppo Generali.",
+      "Piattaforma di gestione landing page personali per i consulenti del Gruppo.",
   },
 };
 

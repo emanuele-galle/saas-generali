@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - SaaS Generali",
+  title: "Privacy Policy - SaaS Consulenti",
   description: "Informativa sulla privacy e trattamento dei dati personali.",
 };
 

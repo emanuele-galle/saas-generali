@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const BASE_URL = process.env.BASE_URL ?? "https://saas-generali.fodivps1.cloud";
+const BASE_URL = process.env.BASE_URL ?? "https://saas-consulenti.fodivps1.cloud";
 
 export default defineConfig({
   testDir: "./e2e",

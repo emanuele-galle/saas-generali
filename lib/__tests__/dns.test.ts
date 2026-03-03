@@ -14,12 +14,12 @@ const mockResolve4 = vi.mocked(resolve4);
 
 describe("verifyDNS", () => {
   it("returns valid when both TXT and A records match", async () => {
-    mockResolveTxt.mockResolvedValue([["saas-generali-verify=abc123"]]);
+    mockResolveTxt.mockResolvedValue([["saas-consulenti-verify=abc123"]]);
     mockResolve4.mockResolvedValue(["193.203.190.63"]);
 
     const result = await verifyDNS(
       "example.com",
-      "saas-generali-verify=abc123",
+      "saas-consulenti-verify=abc123",
       "193.203.190.63",
     );
 
@@ -33,7 +33,7 @@ describe("verifyDNS", () => {
 
     const result = await verifyDNS(
       "example.com",
-      "saas-generali-verify=abc123",
+      "saas-consulenti-verify=abc123",
       "193.203.190.63",
     );
 
@@ -42,12 +42,12 @@ describe("verifyDNS", () => {
   });
 
   it("returns error when A record points to wrong IP", async () => {
-    mockResolveTxt.mockResolvedValue([["saas-generali-verify=abc123"]]);
+    mockResolveTxt.mockResolvedValue([["saas-consulenti-verify=abc123"]]);
     mockResolve4.mockResolvedValue(["1.2.3.4"]);
 
     const result = await verifyDNS(
       "example.com",
-      "saas-generali-verify=abc123",
+      "saas-consulenti-verify=abc123",
       "193.203.190.63",
     );
 
@@ -61,7 +61,7 @@ describe("verifyDNS", () => {
 
     const result = await verifyDNS(
       "nonexistent.example.com",
-      "saas-generali-verify=abc123",
+      "saas-consulenti-verify=abc123",
       "193.203.190.63",
     );
 
@@ -76,7 +76,7 @@ describe("verifyDNS", () => {
 
     const result = await verifyDNS(
       "example.com",
-      "saas-generali-verify=abc123",
+      "saas-consulenti-verify=abc123",
       "193.203.190.63",
     );
 

@@ -36,9 +36,9 @@ function getYouTubeId(url: string): string | null {
   return m ? m[1] : null;
 }
 
-function getThumbnailUrl(url: string): string | null {
+function getThumbnailUrl(url: string, hd = true): string | null {
   const ytId = getYouTubeId(url);
-  if (ytId) return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+  if (ytId) return `https://img.youtube.com/vi/${ytId}/${hd ? "maxresdefault" : "hqdefault"}.jpg`;
   return null;
 }
 
@@ -107,7 +107,8 @@ function VideoCard({
   onClick: () => void;
   featured?: boolean;
 }) {
-  const thumbnail = getThumbnailUrl(video.url);
+  const [hdFailed, setHdFailed] = useState(false);
+  const thumbnail = getThumbnailUrl(video.url, !hdFailed);
 
   return (
     <motion.button
@@ -139,8 +140,9 @@ function VideoCard({
               src={thumbnail}
               alt={video.title || "Video"}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 28vw"
               className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:scale-110"
+              onError={() => { if (!hdFailed) setHdFailed(true); }}
             />
           ) : (
             <div
@@ -347,7 +349,7 @@ export function VideoSection({ videoData }: VideoSectionProps) {
   if (videos.length === 1) {
     return (
       <section className="section-premium py-12 lg:py-16">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <SectionHeader title={videoData.title} description={videoData.description} />
           <div
             className="overflow-hidden rounded-2xl"
@@ -364,7 +366,7 @@ export function VideoSection({ videoData }: VideoSectionProps) {
   if (videos.length === 2) {
     return (
       <section className="section-premium py-12 lg:py-16">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <SectionHeader title={videoData.title} description={videoData.description} />
           <div className="grid gap-8 sm:grid-cols-2">
             {videos.map((video, i) => (
@@ -386,7 +388,7 @@ export function VideoSection({ videoData }: VideoSectionProps) {
 
   return (
     <section className="section-premium py-12 lg:py-16">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <SectionHeader title={videoData.title} description={videoData.description} />
 
         <div className="mb-8">

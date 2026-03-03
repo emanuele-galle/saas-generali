@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy - SaaS Generali",
+  title: "Cookie Policy - SaaS Consulenti",
   description: "Informativa sui cookie utilizzati dal sito.",
 };
 

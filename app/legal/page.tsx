@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Note Legali - SaaS Generali",
+  title: "Note Legali - SaaS Consulenti",
   description: "Note legali e termini di utilizzo del sito.",
 };
 

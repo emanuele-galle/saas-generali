@@ -15,7 +15,7 @@ export async function GET() {
     {
       status,
       timestamp: new Date().toISOString(),
-      app: "saas-generali",
+      app: "saas-consulenti",
       db: dbStatus,
     },
     { status: status === "ok" ? 200 : 503 },

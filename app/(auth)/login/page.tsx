@@ -87,7 +87,7 @@ function LoginForm() {
               <span className="text-xl font-bold text-white">G</span>
             </div>
             <h2 className="text-xl font-bold text-foreground">
-              Saas Generali
+              Saas Consulenti
             </h2>
           </div>
 

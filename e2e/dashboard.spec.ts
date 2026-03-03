@@ -8,7 +8,7 @@ test.describe("Dashboard (Admin)", () => {
       page.getByRole("heading", { name: "Dashboard" })
     ).toBeVisible();
     await expect(
-      page.getByText("Panoramica della piattaforma Saas Generali")
+      page.getByText("Panoramica della piattaforma Saas Consulenti")
     ).toBeVisible();
   });
 

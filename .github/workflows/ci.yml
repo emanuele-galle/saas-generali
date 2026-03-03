@@ -48,9 +48,9 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /var/www/projects/saas-generali
+            cd /var/www/projects/saas-consulenti
             git pull origin main
             docker compose build --no-cache app
             docker compose up -d app
             sleep 5
-            docker compose exec app wget -q -O /dev/null --header='Host: saas-generali.fodivps1.cloud' http://127.0.0.1:3000/api/health || (docker compose logs app --tail 30 && exit 1)
+            docker compose exec app wget -q -O /dev/null --header='Host: saas-consulenti.fodivps1.cloud' http://127.0.0.1:3000/api/health || (docker compose logs app --tail 30 && exit 1)

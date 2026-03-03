@@ -1,6 +1,6 @@
 import { test as setup, expect } from "@playwright/test";
 
-const ADMIN_EMAIL = process.env.TEST_ADMIN_EMAIL ?? "admin@saas-generali.it";
+const ADMIN_EMAIL = process.env.TEST_ADMIN_EMAIL ?? "admin@saas-consulenti.it";
 const ADMIN_PASSWORD = process.env.TEST_ADMIN_PASSWORD ?? "admin2026!";
 
 setup("authenticate as admin", async ({ page }) => {

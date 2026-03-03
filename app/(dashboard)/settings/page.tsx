@@ -143,7 +143,7 @@ export default function SettingsPage() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Piattaforma</p>
-              <p className="font-medium">Saas Generali v{pkg.version}</p>
+              <p className="font-medium">Saas Consulenti v{pkg.version}</p>
             </div>
           </div>
         </CardContent>
