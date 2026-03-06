@@ -53,4 +53,4 @@ jobs:
             docker compose build --no-cache app
             docker compose up -d app
             sleep 5
-            docker compose exec app wget -q -O /dev/null --header='Host: saas-consulenti.fodivps1.cloud' http://127.0.0.1:3000/api/health || (docker compose logs app --tail 30 && exit 1)
+            docker compose exec app wget -q -O /dev/null --header='Host: saas-consulenti.muscarivps.cloud' http://127.0.0.1:3000/api/health || (docker compose logs app --tail 30 && exit 1)

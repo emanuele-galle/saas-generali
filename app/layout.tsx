@@ -17,7 +17,7 @@ const dmSerif = DM_Serif_Display({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://saas-consulenti.fodivps1.cloud'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://saas-consulenti.muscarivps.cloud'),
   title: {
     default: "Saas Consulenti - Gestione Landing Page Consulenti",
     template: "%s | Saas Consulenti",

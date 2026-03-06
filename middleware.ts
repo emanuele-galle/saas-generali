@@ -20,7 +20,7 @@ export function middleware(req: NextRequest) {
   if (
     hostname !== APP_HOSTNAME &&
     hostname !== "localhost" &&
-    !hostname.endsWith(".fodivps1.cloud")
+    !hostname.endsWith(".muscarivps.cloud")
   ) {
     // Rewrite to a special route that resolves custom domains
     // The [slug] page will handle domain lookup

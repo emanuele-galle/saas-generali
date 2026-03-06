@@ -14,7 +14,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-public"
-      - "traefik.http.routers.saas-consulenti.rule=Host(`saas-consulenti.fodivps1.cloud`)"
+      - "traefik.http.routers.saas-consulenti.rule=Host(`saas-consulenti.muscarivps.cloud`)"
       - "traefik.http.routers.saas-consulenti.entrypoints=websecure"
       - "traefik.http.routers.saas-consulenti.tls.certresolver=letsencrypt"
       - "traefik.http.routers.saas-consulenti.middlewares=security-headers@file,compress@file"
@@ -32,7 +32,7 @@ services:
     volumes:
       - ./data/uploads:/app/data/uploads
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider --header='Host: saas-consulenti.fodivps1.cloud' http://127.0.0.1:3000/api/health || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider --header='Host: saas-consulenti.muscarivps.cloud' http://127.0.0.1:3000/api/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

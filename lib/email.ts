@@ -23,7 +23,7 @@ export async function sendEmail({ to, subject, html }: SendEmailOptions) {
   }
 
   return transporter.sendMail({
-    from: process.env.SMTP_FROM || "noreply@fodivps1.cloud",
+    from: process.env.SMTP_FROM || "noreply@muscarivps.cloud",
     to,
     subject,
     html,
