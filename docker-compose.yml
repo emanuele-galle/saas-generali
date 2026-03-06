@@ -31,12 +31,16 @@ services:
       - "traefik.http.routers.saas-giuseppeguglielmo-com.middlewares=security-headers@file,compress@file"
     volumes:
       - ./data/uploads:/app/data/uploads
+      - nextcache:/app/.next/cache
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider --header='Host: saas-consulenti.muscarivps.cloud' http://127.0.0.1:3000/api/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
+
+volumes:
+  nextcache:
 
 networks:
   traefik-public:
