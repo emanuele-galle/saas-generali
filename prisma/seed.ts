@@ -75,15 +75,15 @@ async function main() {
       status: "PUBLISHED",
       coverData: {
         headline: "Il tuo futuro finanziario, la nostra missione",
-        subheadline: "Executive Manager - MediaCom srls",
+        subheadline: "Executive Manager - Banca Generali Private",
         ctaText: "Chiedi un appuntamento",
       },
       summaryData: {
-        text: "Trasparenza, serietà e professionalità: sono queste le qualità che un Executive Manager di MediaCom srls mette ogni giorno al servizio dei propri clienti. Con oltre 15 anni di esperienza nel wealth management, mi dedico a costruire soluzioni personalizzate per proteggere e far crescere il patrimonio dei miei clienti.",
+        text: "Trasparenza, serietà e professionalità: sono queste le qualità che un Executive Manager di Banca Generali Private mette ogni giorno al servizio dei propri clienti. Con oltre 25 anni di esperienza nel wealth management, mi dedico a costruire soluzioni personalizzate per proteggere e far crescere il patrimonio dei miei clienti.",
         highlights: [
-          "Oltre 15 anni di esperienza",
-          "Gestione patrimoniale personalizzata",
-          "Approccio orientato alla sostenibilità",
+          "Laurea in Scienze Bancarie, Finanziarie ed Assicurative",
+          "Iscritto all'Albo Consulenti Finanziari OCF dal 1998",
+          "Executive Manager presso Banca Generali Private",
         ],
       },
       mapData: {
@@ -104,27 +104,74 @@ async function main() {
       experiencesData: {
         experiences: [
           {
-            company: "MediaCom srls",
+            company: "Banca Generali Private",
             role: "Executive Manager",
-            period: "2018 - Presente",
-            description: "Gestione di un portafoglio clienti HNWI con focus su soluzioni di investimento personalizzate.",
+            period: "Gen 2024 - Presente",
+            description: "Gestione di un portafoglio clienti HNWI con focus su soluzioni di investimento personalizzate e coordinamento team di consulenti finanziari.",
           },
           {
-            company: "MediaCom",
-            role: "Senior Financial Advisor",
-            period: "2012 - 2018",
-            description: "Consulenza finanziaria per clienti private con patrimoni significativi.",
+            company: "Banca Generali Private",
+            role: "Consulente Finanziario e Patrimoniale",
+            period: "Mar 2021 - Presente",
+            description: "Consulenza finanziaria e patrimoniale per clienti private e wealth.",
           },
           {
-            company: "Universita di Messina",
-            role: "Laurea in Scienze Bancarie e Assicurative",
-            period: "",
-            description: "",
+            company: "IWBank Private Investments (Gruppo UBI)",
+            role: "Consulente Finanziario",
+            period: "Mag 2015 - Mar 2021",
+            description: "Consulenza finanziaria per clienti private.",
+          },
+          {
+            company: "UBI Banca Private Investment",
+            role: "Consulente Finanziario",
+            period: "Apr 2012 - Mar 2021",
+            description: "Consulenza finanziaria e gestione patrimoniale.",
+          },
+          {
+            company: "Sanpaolo Invest SIM S.p.A.",
+            role: "Private Banker",
+            period: "Mag 2009 - Apr 2012",
+            description: "Gestione portafogli e consulenza per clientela private.",
+          },
+          {
+            company: "Banca CR Firenze",
+            role: "Promotore Finanziario",
+            period: "Mag 2007 - Mag 2009",
+            description: "Promozione e collocamento di prodotti finanziari.",
+          },
+          {
+            company: "Area Banca-Bipielle.net (Gruppo Pop di Lodi)",
+            role: "Promotore Finanziario",
+            period: "Feb 2003 - Mar 2007",
+            description: "Attività di promozione finanziaria.",
+          },
+          {
+            company: "Nascent Sim (Gruppo SJPC)",
+            role: "Promotore Finanziario",
+            period: "Lug 2000 - Gen 2003",
+            description: "Attività di promozione finanziaria.",
+          },
+          {
+            company: "BNL Investimenti Sim",
+            role: "Promotore Finanziario",
+            period: "Set 1998 - Giu 2000",
+            description: "Attività di promozione finanziaria.",
           },
         ],
       },
       educationData: {
-        items: [],
+        items: [
+          {
+            institution: "Università degli Studi di Messina",
+            degree: "Laurea in Scienze Bancarie, Finanziarie ed Assicurative",
+            year: "1995",
+          },
+          {
+            institution: "OCF - Albo Consulenti Finanziari",
+            degree: "Iscrizione Albo Consulenti Finanziari",
+            year: "1998",
+          },
+        ],
       },
       interestsData: {
         interests: [
@@ -137,7 +184,7 @@ async function main() {
       bannerData: {
         imageUrl: "",
         linkUrl: "https://pieromuscari.it",
-        altText: "MediaCom srls - La tua banca privata",
+        altText: "Banca Generali Private - La tua banca privata",
       },
       focusOnData: {
         articles: [
@@ -161,8 +208,8 @@ async function main() {
           },
         ],
       },
-      metaTitle: "Giuseppe Guglielmo - Executive Manager | MediaCom",
-      metaDescription: "Giuseppe Guglielmo, Executive Manager presso MediaCom srls a Milano. Consulenza finanziaria personalizzata, wealth management e investimenti sostenibili.",
+      metaTitle: "Giuseppe Guglielmo - Executive Manager | Banca Generali Private",
+      metaDescription: "Giuseppe Guglielmo, Executive Manager presso Banca Generali Private a Milano. Consulenza finanziaria personalizzata, wealth management e investimenti sostenibili.",
     },
   });
   console.log(`Landing page created: ${landingPage.slug}`);
